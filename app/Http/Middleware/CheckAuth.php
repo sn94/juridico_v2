@@ -26,11 +26,12 @@ class CheckAuth
           'driver' => 'mysql',
           'host' => 'localhost',
           'database' =>  $DataBaseName,
-          'username' => 'root',
-          'password' => '',
+          'username' =>  env("DB_USERNAME"),
+          'password' => env("DB_PASSWORD"),
           'charset' => 'utf8',
           'prefix' => '',
       );
+   
       Config::set('database.connections.mysql', $configDb);
      //$conexionSQL = DB::connection('mysql');
      return $systemid;
@@ -44,17 +45,21 @@ class CheckAuth
            if(  $request->session()->has('provider')  ){
               $this->obtenerConexion(  true );
            }else{
-            $this->obtenerConexion();
+             
+            if(  $request->session()->has('abogado')  ){
+              $this->obtenerConexion();
+            }else
+            ;
+             
            }
-         
            return $next($request);//dejar pasar
          }else{
             if( $request->path() == "signin" ||  $request->path() == "signin/p" || 
              $request->path() == "solicitar-suscripcion" ||  $request->path()=="paso1_suscriptor"
-             ||   $request->path() == "suscripcion" ){
+             ||   $request->path() == "suscripcion"  ||   preg_match("/usuario-existe/", $request->path() ) ){
                 return $next($request);//dejar pasar
             }else {
-                if(  preg_match( "/recovery-password/" ,  $request->path())  > 0) { 
+                if(  preg_match( "/(recovery-password)|(reset-password)/" ,  $request->path())  > 0) { 
                   return $next($request);//dejar pasar
                 }else {
                   if(  preg_match( "/p\//" ,  $request->path())  > 0)

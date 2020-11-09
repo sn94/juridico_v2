@@ -1,15 +1,34 @@
  <div class="container bg-dark text-light">
 
    
+        <input type="hidden" id="OPERACION"   value="{{isset($OPERACION )?$OPERACION:'A'}}">
         <h4 class="text-center">NUEVO USUARIO</h4> 
+
+        @if( isset( $OPERACION )   &&   $OPERACION == "M")
+        <form name="popupForm" method="post" action="<?=url("p/provider/edit/$IDNRO")?>"  onsubmit="crear_usuario(event)" >
+        @else
         <form name="popupForm" method="post" action="<?=url("p/nuevo-provider")?>"  onsubmit="crear_usuario(event)" >
+        @endif
+
+
+        <input type="hidden" name="IDNRO"  value="{{isset($DATO)? $DATO->IDNRO: ''}}">
         @csrf
         <label for="" id="nameLabel" style="display:block;width:100%;z-index:0;">Usuario:</label>
-        <input onblur="controlUserName(event)"  oninput="controlUserName(event)" type="text" id="name" class="form-control form-control-sm" name="NICK" value="" spellcheck="false">
+        <input onblur="controlUserName(event)"  oninput="controlUserName(event)" type="text" id="name" class="form-control form-control-sm" name="NICK" value="{{isset($DATO)? $DATO->NICK : '' }}" spellcheck="false">
         <label  for="" id="emailLabel" style="display:block;width:100%;z-index:2;">Email:</label>
-        <input onblur="emptyInputControl(event)"  oninput="emptyInputControl(event)" type="text" id="email" class="form-control form-control-sm" style="display:block;width: 100%;height:28px;z-index:3;" name="EMAIL" value="" spellcheck="false">
+        <input onblur="emptyInputControl(event)"  oninput="emptyInputControl(event)" type="text" id="email" class="form-control form-control-sm" value="{{isset($DATO)? $DATO->EMAIL : '' }}"  style="display:block;width: 100%;height:28px;z-index:3;" name="EMAIL" value="" spellcheck="false">
+       
+       
+        @if(  isset($OPERACION)   &&  $OPERACION == 'M')
+       <input type="checkbox"  onchange="habilitarInputPass(event)" >Editar password
+       @endif 
         <label for="" id="passLabel" style="display:block;width:100%;z-index:2;">Password:</label>
-        <input onblur="emptyInputControl(event)"  oninput="emptyInputControl(event)" type="password" id="pass" class="form-control form-control-sm" style="display:block;width: 100%;height:28px;z-index:3;" name="PASS" value="" spellcheck="false">
+
+        @php 
+        $habilita_pass=  isset($OPERACION) ? ($OPERACION =='M' ? 'disabled' : '' ) : '';
+        @endphp
+
+        <input  {{$habilita_pass}}     onblur="emptyInputControl(event)"  oninput="emptyInputControl(event)" type="password" id="pass" class="form-control form-control-sm" style="display:block;width: 100%;height:28px;z-index:3;" name="PASS" value="" spellcheck="false">
        
         <input class="btn btn-primary mt-1" type="submit" id="submitButton" name="" value="Guardar"  >
         </form>
@@ -18,6 +37,14 @@
 
 
 <script>
+
+
+
+
+function  habilitarInputPass( ev){
+$("#pass").attr("disabled",   ! (ev.currentTarget.checked) );
+}
+
 
 //Sin espacios
 function controlUserName( ev){
@@ -46,11 +73,12 @@ async function crear_usuario( ev){
 
   if(  $("#name").val() == "") {$("#name").css("border", "#ff0000 solid 1px"); return; }
   if(  $("#email").val() == "") {$("#email").css("border", "#ff0000 solid 1px"); return; }
-  if(  $("#pass").val() == "") {$("#pass").css("border", "#ff0000 solid 1px"); return; }
+  if( !($("#pass").attr("disabled"))  &&  $("#pass").val() == "") {$("#pass").css("border", "#ff0000 solid 1px"); return; }
 
 
   /**Nick ya existente */
-  let peticionusunick= await fetch( "<?=url("p/existe-provider")?>/"+ $("#name").val() );
+  let operacionTipo=  $("#OPERACION").val();
+  let peticionusunick= await fetch( "<?=url("p/existe-provider")?>/"+ $("#name").val()+ "/"+operacionTipo );
   let respuestausunick= await peticionusunick.json();
   if(  "SI" in respuestausunick ){  alert("Este nombre de usuario ya existe"); return; }
 //***************************** */
@@ -83,24 +111,7 @@ $( "#grilla-usuarios").html(  responseData);
 
  
 
-async function eliminarUsuario( ev){
-
-ev.preventDefault();
-if( !confirm("Seguro que desea borrar los datos?")) return;
-
-let src= ev.currentTarget.href;
-
-let response_=  await fetch( src);
-let responseJson= await response_.json();
-if( "ok" in responseJson)
-{
-  alert(  responseJson.ok);
-  actualizarGrilla();
-  }
-else 
-alert(  responseJson.error);
-}
-
+ 
 
 
 </script> 

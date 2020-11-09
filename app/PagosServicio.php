@@ -4,27 +4,19 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RecoveryPassword extends Model
+class PagosServicio extends Model
 {
-
-      /**
+    /**
      * The primary key associated with the table.
      *
      * @var string
      */
-
-    protected $connection= "principal";
-
-    
-    protected $table= "password_recovery";
+    protected $table= "pagos";
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [  'USUARIO','TOKEN','EXPIRA' ];
+    protected $fillable= [  'FECHA','CLIENTE','COMPROBANTE'];
 
     public $timestamps = false;
-
-
- 
-
+    
 }

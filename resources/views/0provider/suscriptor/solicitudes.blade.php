@@ -4,6 +4,7 @@
 @section('content')
 
  
+<div id="formstatus"></div>
 <div id="grilla-clientes">
 @include("0provider.suscriptor.grilla_solicitudes" )
 </div>
@@ -69,19 +70,26 @@ async function aprobarCliente( ev){
 ev.preventDefault();
 
 let url__=  (ev.currentTarget.href); 
+
+//espera 
+$( "#formstatus").html(  "<div  style='z-index:10000; position: absolute; left: 45%;'   class='spinner mx-auto'><div class='spinner-bar'></div></div>" );
 let response_=  await fetch( url__);
 let responseJson= await response_.json();
   if( "ok" in responseJson)
   {
+    $( "#formstatus").html( "");
     $("#modalContenido").html(  responseJson.ok);
     $("#modalComponent").modal("show"); 
+    actualizarGrilla();
     }
   else 
   {
-    
+    $( "#formstatus").html( "");
     $("#modalContenido").html(  responseJson.error);
     $("#modalComponent").modal("show");
   }
+
+
 }
 
 

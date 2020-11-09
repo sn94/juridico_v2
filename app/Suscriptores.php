@@ -19,7 +19,7 @@ class Suscriptores extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [  'RAZON_SOCIAL','EMAIL', 'TELEFONO', 'CELULAR', 'PLAN',   'DNS', 
+    protected $fillable= [  'RAZON_SOCIAL','EMAIL', 'TELEFONO', 'CELULAR', 'PLAN', 'ULT_FECHA_PAGO',   'DNS', 'DIAS', 
     'HABILITADO', 'APROBADO'];
 
     public $timestamps = true;

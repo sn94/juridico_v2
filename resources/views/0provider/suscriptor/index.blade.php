@@ -4,11 +4,37 @@
 @section('content')
 
 
-<a class="btn btn-primary btn-sm mt-1" href="<?=url("p/solicitantes")?>">Aprobar solicitudes</a>
+@if(  $numero_solicitantes  > 0)
+<a class="btn btn-primary btn-sm mt-1" href="<?=url("p/solicitantes")?>">
+Aprobar solicitudes
+<span class="badge badge-light">{{$numero_solicitantes}}</span>
+</a>
+@endif
 
 <div id="grilla-clientes">
 @include("0provider.suscriptor.grilla" )
 </div>
+
+
+
+
+<input type="hidden"   id="NUMERO_SOLICITANTES"  value="{{$numero_solicitantes}}">
+<div id="modal-aviso" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content p-2  bg-warning "    >
+     
+   <p style="font-weight: 600; font-family: Verdana, Geneva, Tahoma, sans-serif; color: #333;"> 
+   Falta revisar {{$numero_solicitantes}} solicitud(es)</p>
+
+      <div class="modal-footer"> 
+        <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+ 
+
 
  
 <div id="modal-eliminar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
@@ -85,6 +111,34 @@ alert(  responseJson.error);
 }
 
 
+
+
+async function regenerarCredenciales( ev){
+
+ev.preventDefault();
+ 
+
+let src= ev.currentTarget.href;
+
+let response_=  await fetch( src);
+let responseJson= await response_.json();
+if( "ok" in responseJson)
+{
+  alert(  responseJson.ok); 
+  }
+else 
+alert(  responseJson.error);
+}
+
+
+
+
+
+window.onload= function(){
+
+  if(  parseInt($("#NUMERO_SOLICITANTES").val())    > 0)
+  $("#modal-aviso").modal("show");
+}
 
 </script>
     

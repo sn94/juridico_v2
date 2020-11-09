@@ -27,10 +27,13 @@ Route::get('/p', "ProveedorController@usuarios");
 //Usuarios proveedores
 Route::get('p/usuarios', "ProveedorController@usuarios");
 //NUEVO PROVIDER****************************
-Route::get('p/nuevo-provider', "ProveedorController@nuevo");
-Route::post('p/nuevo-provider', "ProveedorController@nuevo");
+Route::get('p/nuevo-provider', "ProveedorController@cargar");
+Route::post('p/nuevo-provider', "ProveedorController@cargar");
+//ACTUALIZAR DATOS PROVIDER****************************
+Route::get('p/provider/edit/{id}', "ProveedorController@cargar");
+Route::post('p/provider/edit/{id}', "ProveedorController@cargar");
 //Existe usuario provider
-Route::get('p/existe-provider/{nick}', "ProveedorController@nick_existe");
+Route::get('p/existe-provider/{nick}/{operacion}', "ProveedorController@nick_existe");
 //borrar provider
 Route::get('p/provider/del/{id}', "ProveedorController@borrar");
 /*******CLIENTE*********** */
@@ -38,13 +41,17 @@ Route::get('p/provider/del/{id}', "ProveedorController@borrar");
 Route::get('p/clientes', "SuscriptoresController@clientes");   
 Route::get('p/solicitantes', "SuscriptoresController@solicitantes");   
 // Nuevo cliente
-Route::get('/p/nuevo-suscriptor', "SuscriptoresController@nuevo_suscriptor");    
-Route::post('/p/nuevo-suscriptor', "SuscriptoresController@nuevo_suscriptor");    
+Route::get('/p/nuevo-suscriptor', "SuscriptoresController@nuevo");    
+Route::post('/p/nuevo-suscriptor', "SuscriptoresController@nuevo"); 
+//Actualizar datos suscriptor
+Route::get('p/suscripcion/edit/{id}', "SuscriptoresController@editar");    
+Route::post('p/suscripcion/edit', "SuscriptoresController@editar"); 
+ 
 //Creacion Secuencial de cliente
 Route::post('paso1_suscriptor', "SuscriptoresController@paso1_suscriptor");
 Route::get('/p/paso2_crearbd/{cliid}', "SuscriptoresController@paso2_crearbd");//manual
 Route::get('/p/paso3_creartablas/{cliid}', "SuscriptoresController@paso3_creartablas");//manual
-Route::get('/p/paso4_gen_credenciales/{cliid}', "SuscriptoresController@paso4_gen_credenciales");//auto
+Route::get('p/paso4_gen_credenciales/{cliid}', "SuscriptoresController@paso4_gen_credenciales");//auto
 //Deshabilitar habilitar cliente
 Route::get('/p/suscriptor/{altabaja}/{idcli}', "SuscriptoresController@actualizar_estado_cliente");  
 //Borrar suscriptor
@@ -59,7 +66,11 @@ Route::post('/p/planes-servicio/{tipo}', "PlanServicioController@cargar");
 Route::get('/p/planes-servicio-d/{id}', "PlanServicioController@borrar");
 //uso referencial
 Route::get('/listar-planes-servicio', "PlanServicioController@listar");
-
+//Pagos
+//*********/
+Route::get('p/pagos/{id}', "SuscriptoresController@pagos"); //Listar pagos
+Route::get('p/pago/{id}', "SuscriptoresController@pago"); //Registrar pago
+Route::post('p/pago', "SuscriptoresController@pago"); //Registrar pago
 /***
  * Rutas para suscriptores
  */
@@ -128,7 +139,9 @@ Route::post("edemandado", "DatosPersoController@editar")->middleware("adminopera
 //*****OPERACIONES ABIERTAS A TODOS LOS USUARIOS */
 //Recuperacion de passw
 Route::get('recovery-password',   'UserController@recovery_password');
+Route::get('recovery-password/{token}',   'UserController@recovery_password');
 Route::post('recovery-password',   'UserController@recovery_password');
+Route::post( "reset-password",  'UserController@reset_password');
 
 Route::get("vnotifi/{iddeman}", "NotifiController@ficha"); //ficha de seguimiento (notificacion) individual
 Route::get("dema-noti-venc", "NotifiController@notificaciones_venc");//lista de demandas con notificaciones vencidas y no vencidas

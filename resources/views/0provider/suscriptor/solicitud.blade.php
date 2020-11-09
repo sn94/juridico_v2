@@ -73,40 +73,8 @@
 					<a  style="display:block; text-align: right; font-weight: 600; text-decoration: none; font-family: Verdana, Geneva, Tahoma, sans-serif;"  href="<?=url("/signin")?>">YA TENGO UNA CUENTA</a>
 					<form method="post" action="<?= url("suscripcion")?>">
 					@csrf
-                        <div class="input-group">
-                            <input maxlength="80" class="input--style-1" type="text" placeholder="Nombre completo o razón social" name="RAZON_SOCIAL">
-						</div>
-						<div class="input-group">
-                            <input maxlength="60" class="input--style-1" type="text" placeholder="E-mail" name="EMAIL">
-                        </div>
-						
-						
-						<div class="input-group">
-                            <input oninput="phone_input(event)" maxlength="20" class="input--style-1" type="text" placeholder="Teléfono" name="TELEFONO">
-						</div>
-						<div class="input-group">
-                            <input oninput="phone_input(event)" maxlength="20" class="input--style-1" type="text" placeholder="Celular" name="CELULAR">
-						</div>
-						<div class="input-group">
-						<a  style="padding: 4px 8px; color: lightblue; border-radius: 25px; background-color: black; font-weight: 600;  text-decoration: none ; font-size: 16px;" href="#" onclick="mostrarPlanes()">Ver planes</a>
-						</div>
-                        <div class="input-group">
-							
-                            <div class="rs-select2 js-select-simple select--no-search">
-                                <select name="PLAN" >
-
-									@foreach( $planes as $plan )
-                                    <option value="{{$plan->IDNRO}}"> {{  $plan->DESCR}} </option> 
-									@endforeach
-
-                                </select>
-                                <div class="select-dropdown"></div>
-                            </div>
-                        </div>
-                       
-                        <div class="p-t-20">
-                            <button class="btn btn--radius btn--green" type="submit">Aceptar</button>
-                        </div>
+              
+                    @include("0provider.suscriptor.form")
                     </form>
                 </div>
             </div>

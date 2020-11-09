@@ -40,65 +40,49 @@ public function usuarios(){
 }
 
 
-public function nick_existe( $nick){
+public function nick_existe( $nick, $operacion ){
+ 
    $res=  Usu_proveedor::where("NICK",  $nick)->first();
    if( is_null(  $res) ) return response()->json( ['NO' =>  'Nick disponible']);
-   else return response()->json( ['SI' =>  'Nick ya disponible']);
+   else{
+
+    $usutemp= Usu_proveedor::find(  $res->IDNRO); 
+    $nick_en_bd=   $usutemp->NICK; 
+    if( $operacion== "M"  &&   $nick_en_bd ==   $nick ) return response()->json( ['NO' =>  'Nick disponible']);
+    else return response()->json( ['SI' =>  'Nick ya disponible']);
+
+    }
 }
     
-public function nuevo( Request $request){
-    if(  request()->getMethod()=="POST")  {//hay datos 
-       
-        //Quitar el campo _token
-        $Params=  $request->input(); 
-         $Params['PASS']= Hash::make(  $Params['PASS']);
-         DB::beginTransaction();
-        try{      
-             $r= new Usu_proveedor(); 
-             $r->fill(  $Params  );  
-             $r->save();
-             DB::commit();
-             return response()->json(   array( 'idnro'=> $r->IDNRO )  ); 
-            
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json(   array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e")  ); 
-        }   
-    }
-    else  {   
-
-       
-        if( request()->ajax())
-        return view("0provider.usuario.form");
-        else 
-       { $us= Usu_proveedor::paginate(10);
-        return view('0provider.usuario.create' , ['usuarios'=> $us]);}
-       }/** */    
-}
-   
+ 
 
    
  
 
 
-public function editar( Request $request, $id=0){
-    if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
+public function cargar( Request $request, $id=0){
+    if(   $request->isMethod("POST"))  {//hay datos 
         //Quitar el campo _token
         $Params=  $request->input(); 
         //Devuelve todo elemento de Params que no este presente en el segundo argumento
-        $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
-            if( $ar1 == $ar2) return 0;    else 1; 
-         } ); 
-
+       
             //hashing
-        $Newparams['pass']= Hash::make($request->pass);
+        if( array_key_exists("PASS",   $Params) )
+        $Params['PASS']= Hash::make($request->PASS);
+
+      
+
+
          DB::beginTransaction();
         try{
             
-             $r= Usu_proveedor::find( $request->input("IDNRO") ); 
-             $r->fill(  $Newparams  );  
+            $r= null;
+            if(  $id == 0)  $r= new Usu_proveedor();
+            else   $r= Usu_proveedor::find( $request->input("IDNRO") ); 
+
+             $r->fill(  $Params  );  
              $r->save();
-             echo json_encode( array('ok'=>  "ACTUALIZADO"  ));    
+             echo json_encode( array('idnro'=>  $r->IDNRO  ));    
             DB::commit();
        
         } catch (\Exception $e) {
@@ -107,9 +91,27 @@ public function editar( Request $request, $id=0){
         }   
     }
     else  {   
-        $dato= Usu_proveedor::find( $id );
-        return view('0provider.form' , ["DATO"=> $dato , "OPERACION"=>"M"]  );
-     }/** */    
+        if( $id == 0)
+        {
+            if( request()->ajax())
+            return view("0provider.usuario.form");
+            else 
+           { $us= Usu_proveedor::paginate(10);
+            return view('0provider.usuario.create' , ['usuarios'=> $us]);
+            }  
+        }
+        else{
+            $dato= Usu_proveedor::find( $id );
+            if( request()->ajax())
+            return view("0provider.usuario.form",  [ "IDNRO"=> $id, "DATO"=> $dato , "OPERACION"=>"M"]);
+            else 
+           { $us= Usu_proveedor::paginate(10);
+            return view('0provider.usuario.create' , ['usuarios'=> $us]);
+            }  
+            
+        }
+       
+     }   
  }
 
 
@@ -154,23 +156,24 @@ public function sign_in( Request $request){
     dd(  $conexionSQL->select("select * from deudor"));
     /*** End config */
 
-     if(  is_null( $request->input("nick") ) ){//SI no hay parametros
+     if(  is_null( $request->input("NICK") ) ){//SI no hay parametros
         //MOSTRAR FORM
      
         return view("0provider.login");
 
      }else{
             //DATOS DE SESIOn
-            $usr= $request->input("nick");
+            $usr= $request->input("NICK");
             //OBTENER NRO REG DE USUARIO a partir de su NICK
-            $d_u= Usu_proveedor::where("nick", $usr)->first();
+            $d_u= Usu_proveedor::where("NICK", $usr)->first();
+            var_dump( $d_u);
             //VERIFICAR EXISTENCIA DE USUARIO
             if( is_null( $d_u) ){//no existe
                 return view("0provider.login", array("errorSesion"=> "El usuario ->$usr<- no existe") );
             }else{
                 $id_usr=$d_u->IDNRO; 
-                $nom= $d_u->nick; 
-                $pass= $request->input("pass");
+                $nom= $d_u->NICK; 
+                $pass= $request->input("PASS");
                 $tipo= $d_u->tipo; 
 
                 // VERIFICACION DE contrasenha correcta

@@ -53,7 +53,7 @@
 
 				async	function  validarLogin(ev){
 						ev.preventDefault();
-						let nick= document.getElementById("nick");
+						let nick= document.getElementById("nick").value;
 						let resp= await fetch("<?=url("usuario-existe")?>/"+nick );
 						let resjson= await  resp.json();
 						if( "error"  in   resjson){

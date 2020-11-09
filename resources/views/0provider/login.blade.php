@@ -16,13 +16,13 @@
                 @csrf
 					<div class="wrap-input100 validate-input m-b-26" data-validate="Nombre de usuario requerido!">
 						<span class="label-input100">Usuario:</span>
-						<input class="input100" type="text" name="nick" placeholder="nombre de usuario">
+						<input class="input100" type="text" name="NICK" placeholder="nombre de usuario">
 						<span class="focus-input100"></span>
 					</div>
 
 					<div class="wrap-input100 validate-input m-b-18" data-validate = "Se requiere el password!">
 						<span class="label-input100">Password</span>
-						<input class="input100" type="password" name="pass" placeholder="su password">
+						<input class="input100" type="password" name="PASS" placeholder="su password">
 						<span class="focus-input100"></span>
 					</div>
 

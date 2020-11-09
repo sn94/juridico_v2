@@ -24,16 +24,16 @@ use Illuminate\Support\Facades\URL;
      <style>
         .app .app-body .app-sidebar{
              background: #060a2d;
-             background-image: url(<?=url("assets/img/patron.jpg")?>);
+             
          }
          .app .app-body .app-sidebar .sidebar-nav > .sidebar-nav-link.collapsed, .app .app-body .app-sidebar .sidebar-nav > li > .sidebar-nav-link.collapsed, .app .app-body .app-sidebar .sidebar-nav > .sidebar-nav-group > .sidebar-nav-link.collapsed {
             background: #060a2d;
-            background-image: url(<?=url("assets/img/patron.jpg")?>);
+             
             }
 
         .card-header{
             background: #060a2d;
-            background-image: url(<?=url("assets/img/patron.jpg")?>);
+            
         }
         .sidebar-nav-link{
             font-weight: 600 !important;

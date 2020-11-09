@@ -12,7 +12,7 @@
 
 <tr>
 <td class="text-center">{{$cli->IDNRO}}</td> <td>{{$cli->RAZON_SOCIAL}}</td> 
- <td style="width: 100px;"> 
+ <td style="width: 100px;" class="text-center"> 
   <a style="color: white; " onclick="aprobarCliente(event)"   href="<?=url("p/suscriptor/aprobar/".$cli->IDNRO)?>"> <i class="fa fa-check-circle fa-lg"></i></a>
   </td>
 

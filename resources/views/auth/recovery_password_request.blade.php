@@ -33,7 +33,7 @@
 							Reestablecer password
 						</button>
 					</div>
-					{{  isset($MENSAJE)  ?  $MENSAJE :  '' }}
+					 <?= isset($MENSAJE)  ?  $MENSAJE :  '' ?>
 				</form>
 		
 

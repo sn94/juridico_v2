@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.1
+-- version 5.0.3
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-10-2020 a las 18:01:14
--- Versión del servidor: 10.4.11-MariaDB
--- Versión de PHP: 7.4.3
+-- Tiempo de generación: 08-11-2020 a las 22:37:25
+-- Versión del servidor: 10.4.14-MariaDB
+-- Versión de PHP: 7.4.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `cli_18`
+-- Base de datos: `cli_15`
 --
 
 -- --------------------------------------------------------
@@ -45,7 +44,8 @@ CREATE TABLE `arreglo_extrajudicial` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `TIPO` varchar(20) DEFAULT NULL,
   `IMPORTE_T` int(10) UNSIGNED NOT NULL DEFAULT 0,
-  `CANT_CUOTAS` int(3) NOT NULL DEFAULT 0
+  `CANT_CUOTAS` int(3) NOT NULL DEFAULT 0,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -57,7 +57,7 @@ CREATE TABLE `arreglo_extrajudicial` (
 CREATE TABLE `arr_extr_cuotas` (
   `ARREGLO` int(10) UNSIGNED DEFAULT NULL,
   `IDNRO` int(10) UNSIGNED NOT NULL,
-  `VENCIMIENTO` date DEFAULT NULL,
+  `EXPIRA` date DEFAULT NULL,
   `IMPORTE` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `FECHA_PAGO` date DEFAULT NULL,
   `NUMERO` int(10) UNSIGNED DEFAULT NULL
@@ -123,7 +123,8 @@ CREATE TABLE `ctas_banco` (
   `CUENTA` varchar(20) DEFAULT NULL,
   `TIPO_CTA` varchar(6) DEFAULT NULL,
   `TITULAR` varchar(60) DEFAULT NULL,
-  `SALDO` varchar(12) DEFAULT '0'
+  `SALDO` varchar(12) DEFAULT '0',
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -137,7 +138,8 @@ CREATE TABLE `cuenta_judicial` (
   `BANCO` varchar(25) DEFAULT NULL,
   `CTA_JUDICI` varchar(25) DEFAULT NULL,
   `ID_DEMA` int(10) UNSIGNED DEFAULT NULL,
-  `CI` varchar(10) DEFAULT NULL
+  `CI` varchar(10) DEFAULT NULL,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -173,7 +175,8 @@ CREATE TABLE `demandado` (
   `CI_GAR_3` varchar(7) DEFAULT NULL,
   `DIR_GAR_3` varchar(50) DEFAULT NULL,
   `TEL_GAR_3` varchar(17) DEFAULT NULL,
-  `CEL_GAR_3` varchar(17) DEFAULT NULL
+  `CEL_GAR_3` varchar(17) DEFAULT NULL,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -184,7 +187,8 @@ CREATE TABLE `demandado` (
 
 CREATE TABLE `demandan` (
   `DESCR` varchar(50) DEFAULT NULL,
-  `IDNRO` int(10) UNSIGNED NOT NULL
+  `IDNRO` int(10) UNSIGNED NOT NULL,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -220,7 +224,8 @@ CREATE TABLE `demandas2` (
   `LEV_EMB_CAP_INST` varchar(35) DEFAULT NULL,
   `CON_DEPOSITO` char(1) DEFAULT 'N',
   `OBS` varchar(100) DEFAULT NULL,
-  `ARR_EXTRAJUDI` char(1) DEFAULT 'N'
+  `ARR_EXTRAJUDI` char(1) DEFAULT 'N',
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -247,7 +252,8 @@ CREATE TABLE `failed_jobs` (
 CREATE TABLE `filtros` (
   `NRO` int(2) UNSIGNED NOT NULL,
   `NOMBRE` varchar(50) DEFAULT NULL,
-  `FILTRO` text DEFAULT NULL
+  `FILTRO` text DEFAULT NULL,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -266,7 +272,8 @@ CREATE TABLE `gastos` (
   `IDNRO` int(10) UNSIGNED NOT NULL,
   `ID_DEMA` int(10) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -291,7 +298,8 @@ CREATE TABLE `honorarios` (
   `NOTIFI_3` date DEFAULT NULL,
   `FECHA_EMB` date DEFAULT NULL,
   `GS2` double(20,0) UNSIGNED DEFAULT 0,
-  `INSTI` int(10) UNSIGNED DEFAULT NULL
+  `INSTI` int(10) UNSIGNED DEFAULT NULL,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -326,7 +334,8 @@ CREATE TABLE `inter_contraparte` (
   `IDNRO` int(10) UNSIGNED NOT NULL,
   `ABOGADO` varchar(40) DEFAULT NULL,
   `DIRLEGAL` varchar(80) DEFAULT '',
-  `OBS` longtext DEFAULT NULL
+  `OBS` longtext DEFAULT NULL,
+  `ABOGADO_` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -380,7 +389,8 @@ CREATE TABLE `liquida` (
   `NEW_SALDO` varchar(10) DEFAULT '0',
   `TITULAR` varchar(40) DEFAULT NULL,
   `IDNRO` int(10) UNSIGNED NOT NULL,
-  `ID_DEMA` int(10) UNSIGNED DEFAULT NULL
+  `ID_DEMA` int(10) UNSIGNED DEFAULT NULL,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -505,7 +515,8 @@ CREATE TABLE `notificaciones` (
   `NOTIFI1_AI_GAR` date DEFAULT NULL,
   `NOTIFI2_AI_TIT` date DEFAULT NULL,
   `NOTIFI2_AI_GAR` date DEFAULT NULL,
-  `FLAG` char(1) NOT NULL DEFAULT 'N'
+  `FLAG` char(1) NOT NULL DEFAULT 'N',
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -534,7 +545,8 @@ CREATE TABLE `obs_demanda` (
   `TEL_GAR_3` varchar(17) DEFAULT NULL,
   `CI_GAR_3` varchar(7) DEFAULT NULL,
   `OBS_PREVEN` longtext DEFAULT NULL,
-  `OBS_EJECUT` longtext DEFAULT NULL
+  `OBS_EJECUT` longtext DEFAULT NULL,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -574,7 +586,8 @@ CREATE TABLE `parametros` (
   `IDNRO` int(10) UNSIGNED NOT NULL,
   `EMAIL` varchar(60) DEFAULT NULL,
   `SHOW_COUNTERS` char(1) NOT NULL DEFAULT 'N',
-  `DEPOSITO_CTA_JUDICI` char(1) NOT NULL DEFAULT 'N'
+  `DEPOSITO_CTA_JUDICI` char(1) NOT NULL DEFAULT 'N',
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -697,6 +710,19 @@ INSERT INTO `param_filtros` (`IDNRO`, `TABLA`, `TABLA_FRONT`, `CAMPO`, `CAMPO_FR
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `password_recovery`
+--
+
+CREATE TABLE `password_recovery` (
+  `IDNRO` int(10) UNSIGNED NOT NULL,
+  `USUARIO` int(10) UNSIGNED DEFAULT NULL,
+  `TOKEN` varchar(60) DEFAULT NULL,
+  `VENCIMIENTO` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `recibo`
 --
 
@@ -763,25 +789,9 @@ CREATE TABLE `vtos` (
   `FECHA` date DEFAULT NULL,
   `FECHAV` date DEFAULT NULL,
   `OBS` varchar(100) DEFAULT NULL,
-  `VENCIDO` char(1) DEFAULT NULL
+  `VENCIDO` char(1) DEFAULT NULL,
+  `ABOGADO` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
-
--- ----------------------------
--- Table structure for password_recovery
--- ----------------------------
-DROP TABLE IF EXISTS `password_recovery`;
-CREATE TABLE `password_recovery`  (
-  `IDNRO` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `USUARIO` int UNSIGNED NULL DEFAULT NULL,
-  `TOKEN` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `VENCIMIENTO` timestamp(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`IDNRO`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
-
 
 --
 -- Índices para tablas volcadas
@@ -962,6 +972,12 @@ ALTER TABLE `param_filtros`
   ADD PRIMARY KEY (`IDNRO`);
 
 --
+-- Indices de la tabla `password_recovery`
+--
+ALTER TABLE `password_recovery`
+  ADD PRIMARY KEY (`IDNRO`) USING BTREE;
+
+--
 -- Indices de la tabla `recibo`
 --
 ALTER TABLE `recibo`
@@ -1140,6 +1156,12 @@ ALTER TABLE `param_filtros`
   MODIFY `IDNRO` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=235;
 
 --
+-- AUTO_INCREMENT de la tabla `password_recovery`
+--
+ALTER TABLE `password_recovery`
+  MODIFY `IDNRO` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `recibo`
 --
 ALTER TABLE `recibo`
@@ -1155,7 +1177,7 @@ ALTER TABLE `relaciones_filtros`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `IDNRO` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `IDNRO` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `vtos`
