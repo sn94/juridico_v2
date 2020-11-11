@@ -42,13 +42,16 @@ class DatosPersoController extends Controller
             $consulta= DB::table("demandado") 
             ->selectRaw( "demandado.IDNRO, demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.CI= demandado.CI) as nro");
           }
-         $dmds=  $consulta->paginate(20);
-        $sqlq= $consulta->toSql(); 
-      // echo $sqlq;
-        if(  $request->ajax()){
-        return view('demandado.list_paginate_ajax', ['lista' => $dmds]  ); 
-        }else
-        return view('demandado.list_paginate', ['lista' => $dmds]  ); 
+
+            $dmds=  $consulta->paginate(20);
+            $sqlq= $consulta->toSql(); 
+            // echo $sqlq;
+            if(  $request->ajax()){
+            return view('demandado.list_paginate_ajax', ['lista' => $dmds]  ); 
+            }else
+            return view('demandado.list_paginate', ['lista' => $dmds]  ); 
+           
+       
     }
 
 

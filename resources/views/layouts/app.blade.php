@@ -43,6 +43,14 @@ use Illuminate\Support\Facades\URL;
         }
          
 
+
+        a.text-light:focus, a.text-light:hover{  background-color: black !important;}
+
+        .btn-primary{
+            background-color: #060a2d;
+        }
+
+
 <?php
 use App\Http\Controllers\MessengerController;
 use App\Mobile_Detect;
@@ -113,7 +121,7 @@ endif;
      </style>
 </head>
 
-<body>
+<body class="bg-dark">
     <div class="app">
         <div class="app-body">
             <div class="app-sidebar sidebar-slide-left">
@@ -182,21 +190,30 @@ endif;
                 </ul>
                 <div class="sidebar-footer"><a href="<?=url("messenger")?>" data-toggle="tooltip" title="Mensajes"><i class="fa fa-comment"></i> </a>
                 
-                <a href="<?=url("signout")?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
+                <a   href="<?=url("signout")?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
             </div>
             <div class="app-content">
-                <nav class="navbar navbar-expand navbar-light bg-white"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
-                    <div class="navbar-brand">EST. JUR&Iacute;DICO &middot;  </div>
+                <nav class="navbar navbar-expand navbar-light" style="background-color: #060a2d;"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
+                    <div id="abogado-view-info" class="navbar-brand text-light"> 
+                        @if( session()->has("abogado") )
+                        ABOGADO: {{session("abogado")}}
+                        @else
+                        <a style="color: yellow;" href="#" onclick="$('#modal-abogado').modal('show')">«Ingresar código de abogado»</a>
+                        <div id="abogado-view-error"></div>
+                        @endif 
+
+                    </div>
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle text-light" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="badge badge-pill  {{ MessengerController::numeroMensajesSinLeer() > 0 ? 'badge-danger' :'badge-primary'}}"> 
                         {{MessengerController::numeroMensajesSinLeer()}}</span> 
                         <i class="fa fa-bell-o"></i></a>
 
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a href="{{url('messenger')}}" class="dropdown-item"><small class="dropdown-item-title"> Nuevo mensaje</small><br>     
+                            <div class="dropdown-menu dropdown-menu-right" style="background-color: #060a2d ;">
+                                <a href="{{url('messenger')}}" class="dropdown-item dropdown-item-title text-light">Nuevo mensaje<br>     
                                 </a>
-                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/R")?>" class="dropdown-item dropdown-link">Recibidos&nbsp; <span class="badge badge-pill badge-primary ">{{MessengerController::numeroMensajesSinLeer()}}</span></a>
+                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/R")?>" class="dropdown-item dropdown-link text-light">Recibidos&nbsp; <span class="badge badge-pill badge-primary ">{{MessengerController::numeroMensajesSinLeer()}}</span></a>
                                 @if( MessengerController::mensajesRecibidosSinLeer() <= 0 )
                                
                                 <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">0 MENSAJES NUEVOS</small><br>
@@ -204,7 +221,7 @@ endif;
                                 </a>
                                 @endif
 
-                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/E") ?>" class="dropdown-item dropdown-link">Enviados&nbsp;<span class="badge badge-pill badge-primary ">{{MessengerController::numeroEnviados()}}</span>  </a>
+                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/E") ?>" class="dropdown-item dropdown-link text-light">Enviados&nbsp;<span class="badge badge-pill badge-primary ">{{MessengerController::numeroEnviados()}}</span>  </a>
                                 @if(  MessengerController::mensajesEnviados() <= 0 )
                                  
                                 <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">0 MENSAJES NUEVOS</small><br>
@@ -219,9 +236,10 @@ endif;
                         </li>
                     </ul>
                 </nav>
-                <nav aria-label="breadcrumb"  >
-                    <ol class="breadcrumb" style="background-color: {{ isset($breadcrumbcolor)  ?  $breadcrumbcolor : '#dee2e6;' }}">
+                <nav aria-label="breadcrumb"   >
+                    <ol class="breadcrumb text-light" style="background-color: {{ isset($breadcrumbcolor)  ?  $breadcrumbcolor : '#060a2d;' }}">
                     @yield('breadcrumb')
+
                        
                     </ol>
                 </nav>
@@ -232,13 +250,56 @@ endif;
 
                 <!-- inicio CONTENT-->
 
-                <div class="container-fluid" id="juridicosys-content">
+                <div class="container-fluid " id="juridicosys-content">
                     
                     @yield('content')
                          
                            
-                    </div>
+                </div>
                     <!-- END CONTENT -->
+
+                
+<div id="modal-abogado" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content p-2 bg-dark text-light" >
+
+    <div class="modal-header">
+        <h5 class="modal-title">Ingrese el PIN de abogado</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      
+      <input class="form-control" type="text" id="abogado_code" >
+    
+
+      <div class="modal-footer">
+      <a onclick="enviar_codigo_abogado(event)" href="<?=url("session-abogados")?>" class="btn btn-primary" >OK</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+  async  function enviar_codigo_abogado( ev){
+        ev.preventDefault();
+        let lawyer=  $("#abogado_code").val();
+        let url= ev.target.href+ "/"+lawyer;
+
+        let res=  await fetch(  url );
+        if( res.redirected) window.location=  res.url;
+        else{
+            let res_j=  await res.json();
+            $("#modal-abogado").modal("hide");
+            alert(  res_j.error );
+            $//("#abogado-view-error").html(  res_html );
+            console.log(  res_j);
+        }
+       
+    }
+
+</script>
 
 
 

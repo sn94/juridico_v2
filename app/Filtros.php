@@ -15,7 +15,7 @@ class Filtros extends Model
 
     protected $primaryKey = 'NRO';
 
-    protected $fillable= [  'NOMBRE','FILTRO'];
+    protected $fillable= [  'NOMBRE','FILTRO', 'ABOGADO'];
 
     public $timestamps = false;
     

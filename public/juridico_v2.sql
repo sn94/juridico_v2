@@ -12,16 +12,25 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Base de datos: `cli_15`
---
-
+ 
 -- --------------------------------------------------------
+
+
+
+CREATE TABLE  `abogados` ( 
+  `IDNRO` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+   `NOMBRE` VARCHAR(60) NULL , `APELLIDO` VARCHAR(60) NULL , 
+   `DOMICILIO` VARCHAR(150) NULL ,
+    `TELEFONO` VARCHAR(20) NULL , 
+   `CELULAR` VARCHAR(20) NULL , 
+   `CEDULA` VARCHAR(9) NULL ,
+   `EMAIL`  VARCHAR(60)  NULL, 
+   `created_at` TIMESTAMP NULL,
+   `updated_at` TIMESTAMP NULL,
+   PRIMARY KEY (`IDNRO`)) ENGINE = InnoDB; 
+
+
+
 
 --
 -- Estructura de tabla para la tabla `actuaria`
@@ -708,17 +717,6 @@ INSERT INTO `param_filtros` (`IDNRO`, `TABLA`, `TABLA_FRONT`, `CAMPO`, `CAMPO_FR
 (234, 'notificaciones', 'SEGUIMIENTO', 'INHI_AI_NRO', 'INHIBICION NRO. A.I.', 'C', 10, NULL, 2);
 
 -- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `password_recovery`
---
-
-CREATE TABLE `password_recovery` (
-  `IDNRO` int(10) UNSIGNED NOT NULL,
-  `USUARIO` int(10) UNSIGNED DEFAULT NULL,
-  `TOKEN` varchar(60) DEFAULT NULL,
-  `VENCIMIENTO` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 

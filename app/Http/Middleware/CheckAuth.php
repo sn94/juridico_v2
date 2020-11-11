@@ -39,37 +39,48 @@ class CheckAuth
 
 
 
+  private function rutas_permitidas(   $request  ){
+//rutas permitidas sin autenticacion
+    $permitidas= [ "signin", "signin\/p", "solicitar-suscripcion", "paso1_suscriptor", "suscripcion", "usuario-existe",
+  "recovery-password", "reset-password"];
+  $permitir= false;
+    foreach($permitidas as $ruta):
+      if(        preg_match("/$ruta/", $request->path() ) ){ $permitir= true; break; }
+    endforeach;
+    return $permitir;
+  }
+
+
+
+
+
+
+
     public function handle($request, Closure $next)
     {
          if ($request->session()->has('nick')) {
            if(  $request->session()->has('provider')  ){
-              $this->obtenerConexion(  true );
+              $this->obtenerConexion(  true ); return $next($request);//dejar pasar
            }else{
              
             if(  $request->session()->has('abogado')  ){
-              $this->obtenerConexion();
-            }else
-            ;
+              $this->obtenerConexion(); return $next($request);//dejar pasar
+            }else{
+              //control codigo abogado
+              if( preg_match("/abogados/",  $request->path() )  > 0 )  return $next($request);//dejar pasar
+              return redirect('abogados'); 
+            }
              
            }
-           return $next($request);//dejar pasar
+           
          }else{
-            if( $request->path() == "signin" ||  $request->path() == "signin/p" || 
-             $request->path() == "solicitar-suscripcion" ||  $request->path()=="paso1_suscriptor"
-             ||   $request->path() == "suscripcion"  ||   preg_match("/usuario-existe/", $request->path() ) ){
-                return $next($request);//dejar pasar
-            }else {
-                if(  preg_match( "/(recovery-password)|(reset-password)/" ,  $request->path())  > 0) { 
-                  return $next($request);//dejar pasar
-                }else {
-                  if(  preg_match( "/p\//" ,  $request->path())  > 0)
-                  return redirect('signin/p'); 
-                  else 
-                  return redirect('signin'); 
-                
-                }
-            
-            }
+
+          if( $this->rutas_permitidas( $request) )     return $next($request);//dejar pasar
+          else{
+            if( preg_match( "/p\//" ,  $request->path())  > 0) return redirect('signin/p'); 
+            else   return redirect('signin'); 
+          }
+
          }
         
     }

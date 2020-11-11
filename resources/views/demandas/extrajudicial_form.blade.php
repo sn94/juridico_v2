@@ -9,7 +9,7 @@
     <div class="row">
     <?php if( $OPERACION != "V"): ?>
       <div class=" col-12 col-md-1">
-      <button type="submit" class="btn btn-success btn-sm" >Guardar</button>
+      <button type="submit" class="btn btn-primary btn-sm" >Guardar</button>
       </div>
       
       <?php endif; ?>

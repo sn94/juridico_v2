@@ -15,7 +15,7 @@ class Observacion extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [  'CI','OBS_PREVEN','OBS_EJECUT'];
+    protected $fillable= [  'CI','OBS_PREVEN','OBS_EJECUT', 'ABOGADO'];
 
     public $timestamps = false;
     

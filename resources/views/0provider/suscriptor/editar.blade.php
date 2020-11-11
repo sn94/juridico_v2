@@ -53,7 +53,7 @@ async function editar( ev){
     
     let peticion1= await fetch( ev.target.action,  config );
     let respuesta1= await peticion1.json();
-    console.log(respuesta1);
+     
     if( "idnro" in respuesta1 )
      {      
         $("#formstatus").html(    "" );

@@ -15,7 +15,7 @@ class Contraparte extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [  'ABOGADO', 'DIRLEGAL', 'OBS'];
+    protected $fillable= [  'ABOGADO', 'DIRLEGAL', 'OBS',  'ABOGADO_'];
 
     public $timestamps = false;
     

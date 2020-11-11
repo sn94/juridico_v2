@@ -38,6 +38,7 @@ class DemandaController extends Controller
         $dts= DB::table("demandas2")
         ->join("demandado", "demandado.CI", "=", "demandas2.CI")
         ->select("demandado.CI", "demandado.TITULAR", "demandas2.*")
+        ->where("ABOGADO",  session("ABOGADO") )
         ->get();
        // $dts = DB::select("select IDNRO,TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas2  order by TITULAR");
         return view('demandas.list', ['lista' => $dts, "odemanda" => $o_de]); 

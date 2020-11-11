@@ -16,7 +16,7 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
    
     <div class="row">
       <div class=" col-12 col-md-1">
-      <button type="submit" class="btn btn-success btn-sm mb-1" >Guardar</button>
+      <button type="submit" class="btn btn-primary btn-sm mb-1" >Guardar</button>
       </div>
       <div class="col-12 col-md-2">
         <div class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="1000">

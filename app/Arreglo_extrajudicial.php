@@ -16,7 +16,7 @@ class Arreglo_extrajudicial extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [  'FECHA','TIPO','IMPORTE_T','CANT_CUOTAS' ]; 
+    protected $fillable= [  'FECHA','TIPO','IMPORTE_T','CANT_CUOTAS', 'ABOGADO' ]; 
 
     public $timestamps = true;
 

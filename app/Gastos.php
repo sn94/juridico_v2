@@ -16,7 +16,7 @@ class Gastos extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [  'CODIGO','FECHA','NUMERO','DETALLE1','DETALLE2' , 'IMPORTE', 'ID_DEMA'];
+    protected $fillable= [  'CODIGO','FECHA','NUMERO','DETALLE1','DETALLE2' , 'IMPORTE', 'ID_DEMA',  'ABOGADO'];
 
     public $timestamps = true;
 

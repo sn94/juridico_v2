@@ -45,40 +45,40 @@ if ($detect->isMobile() == false):?>
 <div class="nav-tabs-responsive">
   <ul class="nav nav-tabs mb-4">
   <li class="nav-item">
-      <a id="pestana-persona" href="#persona" class="nav-link active" data-toggle="tab">
+      <a id="pestana-persona" href="#persona" class="nav-link active text-primary" data-toggle="tab">
         <i class="icon-lock"></i> Datos personales
       </a>
     </li>
     <li class="nav-item">
-      <a id="pestana-demanda"  href="#demanda" class="nav-link" data-toggle="tab">
+      <a id="pestana-demanda"  href="#demanda" class="nav-link text-primary" data-toggle="tab">
         <i class="icon-lock"></i> Demanda
       </a>
     </li>
     <li class="nav-item">
-      <a id="pestana-seguimiento" href="#seguimiento" class="nav-link" data-toggle="tab">
+      <a id="pestana-seguimiento" href="#seguimiento" class="nav-link text-primary" data-toggle="tab">
         <i class="icon-user"></i> Seguimiento
       </a>
     </li>
     <li class="nav-item">
-      <a id="pestana-observacion" href="#observacion" class="nav-link" data-toggle="tab">
+      <a id="pestana-observacion" href="#observacion" class="nav-link text-primary" data-toggle="tab">
         <i class="icon-credit-card"></i> Observacion
       </a>
     </li>
 
     <li class="nav-item">
-      <a  id="pestana-contraparte" href="#contraparte" class="nav-link" data-toggle="tab">
+      <a  id="pestana-contraparte" href="#contraparte" class="nav-link text-primary" data-toggle="tab">
         <i class="icon-credit-card"></i> Interv. contraparte
       </a>
     </li>
 
     <li class="nav-item">
-      <a id="pestana-extrajudicial"  href="#extrajudicial" class="nav-link" data-toggle="tab">
+      <a id="pestana-extrajudicial"  href="#extrajudicial" class="nav-link text-primary" data-toggle="tab">
         <i class="icon-credit-card"></i> Arreglo Extrajud.
       </a>
     </li>
     
     <li class="nav-item">
-      <a id="pestana-honorarios" href="#honorarios" class="nav-link" data-toggle="tab">
+      <a id="pestana-honorarios" href="#honorarios" class="nav-link text-primary" data-toggle="tab">
         <i class="icon-credit-card"></i> Honorarios
       </a>
     </li>

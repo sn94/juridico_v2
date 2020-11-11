@@ -23,17 +23,17 @@ border:none;
  }
 
 </style>
-<a href="<?=url("demandas-agregar")?>" class="btn btn-success btn-sm">NUEVO</a>
+<a href="<?=url("demandas-agregar")?>" class="btn btn-primary btn-sm">NUEVO</a>
 
 
-<div class="form-check">
+<div class="form-check text-light">
     <input id="flag-codeudor" class="form-check-input" type="checkbox" value="option1" onchange="busqueda_selectiva( event) ">
     <label class="form-check-label" for="inlineCheckbox1">BUSCAR CO-DEUDORES</label>
   </div>
 
 <div class="input-group mb-2 mt-3">
   <div class="input-group-prepend">
-    <button  onclick="buscar()" class="btn btn-success" type="button"><i class="fa fa-search" aria-hidden="true"></i>
+    <button  onclick="buscar()" class="btn btn-success btn-sm" type="button"><i class="fa fa-search" aria-hidden="true"></i>
 </button>
   </div>
   <input id="argumento" onkeydown="buscarRegs(event)" type="text" class="form-control" placeholder="Buscar por cédula o nombre/apellido" aria-label="" aria-describedby="basic-addon1">
@@ -45,11 +45,17 @@ border:none;
 -->
   
  
+ 
+ 
 <div id="tabla-dinamica" class="table-responsive" style="width: 100%;">
 
 @include("demandado.list_paginate_ajax", ["lista"=>$lista]  )
 
 </div> 
+ 
+
+
+
 
 
   <script> 

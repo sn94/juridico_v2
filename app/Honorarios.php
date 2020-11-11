@@ -16,7 +16,7 @@ class Honorarios extends Model
     protected $primaryKey = 'IDNRO';
 
     protected $fillable= [ 'IDNRO', 'ADJ_HONORARIOS','AI_NRO','FECHA','GS','NOTIFI_1','ADJ_CITA','PROVIDENCIA',
-    'NOTIFI_2','ADJ_SD','SD_NRO','FECHA_SD','NOTIFI_3','FECHA_EMB','GS2', 'INSTI'];
+    'NOTIFI_2','ADJ_SD','SD_NRO','FECHA_SD','NOTIFI_3','FECHA_EMB','GS2', 'INSTI', 'ABOGADO'];
 
     public $timestamps = false;
     

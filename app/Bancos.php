@@ -16,7 +16,7 @@ class Bancos extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [  'BANCO','TIPO_CTA','CUENTA','TITULAR','SALDO' ];
+    protected $fillable= [  'BANCO','TIPO_CTA','CUENTA','TITULAR','SALDO' , 'ABOGADO'];
 
     public $timestamps = false;
 

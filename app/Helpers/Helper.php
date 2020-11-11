@@ -137,4 +137,10 @@ public static function generar_password(){
      //Mostramos la contraseña generada
      return $password;
 }
+
+
+
+ 
+
+
 }

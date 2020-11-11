@@ -243,8 +243,6 @@ public function sign_in( Request $request){
                       }catch( Exception $e){}
                    }//end empty email control
                  
-                
-
                 return redirect(  url("/") ); 
                 }else{
                 //	echo json_encode(  array('error' => "Clave incorrecta" )); 

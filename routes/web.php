@@ -71,21 +71,26 @@ Route::get('/listar-planes-servicio', "PlanServicioController@listar");
 Route::get('p/pagos/{id}', "SuscriptoresController@pagos"); //Listar pagos
 Route::get('p/pago/{id}', "SuscriptoresController@pago"); //Registrar pago
 Route::post('p/pago', "SuscriptoresController@pago"); //Registrar pago
+
+
 /***
  * Rutas para suscriptores
  */
-
-
 Route::get('suscripcion', "SuscriptoresController@solicitar"); 
 Route::post('suscripcion', "SuscriptoresController@paso1_suscriptor");
 Route::get('usuario-existe/{nick}', "UserController@validar_existencia_usuario"); 
-
 Route::get('/', "WelcomeController@index");//una vez autenticado
 Route::get('denegado', "WelcomeController@unauthorized");
 
 Route::get('signin',   'UserController@sign_in');
 Route::post('signin',   'UserController@sign_in');
 Route::get('signout',   'UserController@sign_out'); 
+
+
+// C R E A R SESION ABOGADO 
+Route::get("session-abogados/{codigo}", "AbogadoController@select_cod_abogado"); 
+
+
 
 
 
@@ -190,6 +195,21 @@ Route::get('filtro-orden/{col}/{sentido}',   'FilterController@filtro_orden');
 
 /** ** SUPERVISOR  */
 Route::group(['middleware' => 'admin'], function () {
+
+
+    /********
+     * ABOGADOS
+     * 
+     ***********/
+    
+    // O T R O S METODOS
+    Route::get("abogados", "AbogadoController@index"); 
+    Route::get("abogados/create", "AbogadoController@cargar"); 
+    Route::post("abogados/create", "AbogadoController@cargar"); 
+    Route::get("abogados/delete/{id}", "AbogadoController@delete"); 
+    Route::get("abogados/edit/{id}", "AbogadoController@cargar"); 
+    Route::post("abogados/edit/{id}", "AbogadoController@cargar"); 
+
 
 
     /**BORRADO */
