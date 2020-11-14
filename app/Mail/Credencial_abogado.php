@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
   
 
 
-class CredencialesCliente extends Mailable
+class Credencial_abogado extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -44,7 +44,7 @@ class CredencialesCliente extends Mailable
     public function build()
     {
         return  $this->subject(  $this->titulo )->from('info@clientez.com')
-                ->view('0provider.mailcredencial',  
+                ->view('abogado.mailcredencial',  
                  [ 'nick'=> $this->Nick, 'password'=> $this->Password, 'pin'=> $this->pin_acceso,
                   "timestamp"=> $this->Timestamp  ]);
        // return $this->view('view.name');

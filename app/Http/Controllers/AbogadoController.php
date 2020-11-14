@@ -5,11 +5,17 @@ namespace App\Http\Controllers;
 use App\Abogados;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Mail\Correo;
+use App\Mail\Credencial_abogado;
+use App\Mail\GenericMail;
 use App\pdf_gen\PDF;
+use App\User;
 use Exception; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AbogadoController extends Controller
 {
@@ -65,20 +71,48 @@ class AbogadoController extends Controller
 
 
 
-    public function select_cod_abogado(  $codigo ){
+    public function select_cod_abogado(  ){
         //Realmente existe?
         $this->obtenerConexion();
-        $abo= Abogados::find(  $codigo);
+        $datos= request()->input();
+        $abo= Abogados::find(  $datos['abogado_code']);
         if( is_null( $abo) )
         { 
            return  response()->json(  ["error"=> "El código que ingresó no existe"  ] );
            // return view("layouts.error",  ["error"=> "El código que ingresó no existe"  ]);
         }
         else
-       { session(['abogado' => $codigo]);
-        return redirect(  url("/") );} 
+       {  //Verificar concordancia entre codigo de abogado y PIN
+
+        if( session("tipo") != "SA"):
+                $pin_ingresado=  $datos['abogado_pin'];
+                $pin_hash=  $abo->PIN;
+                if( Hash::check( $pin_ingresado, $pin_hash)){
+                    session(['abogado' => $datos['abogado_code']]);
+                    return redirect(  url("/") );
+                }else{
+                    return  response()->json(  ["error"=> "Pin no válido"  ] );
+                }
+        else:
+                session(['abogado' => $datos['abogado_code']]);
+                return redirect(  url("/") );
+        endif;
+
+        } 
     }
 
+
+    
+
+    private function enviar_email_credencial( $email, $genericEmail){
+        try{
+            Mail::to([ $email]) 
+            //->queue(   new AuthAlert(  $usr,  ["Suscriptores-agent"=>$SuscriptoresAgent, "ip"=>$Ip] ) );
+        ->send( $genericEmail );
+        }catch( Exception $e){ 
+            //echo $e;
+        }
+    }
 
     public function cargar( Request $request, $id=0){
         $this->obtenerConexion();
@@ -89,14 +123,51 @@ class AbogadoController extends Controller
             try{
                 
                 $r= null;
-                if(  $id == 0){  
+
+                if(  $id == 0){  //creacion
                     $r= new Abogados();
+                     //Generar PIN para permitir uso del ID a terceros
+                    $raw_pin_third_party=  Helper::generar_password();
+                    $Params['PIN']=   Hash::make(  $raw_pin_third_party);
                 }
-                else   $r= Abogados::find( $request->input("IDNRO") ); 
+                else  { $r= Abogados::find( $request->input("IDNRO") ); }
+
+                $Params[ 'CEDULA']= Helper::cleanNumber(   $Params[ 'CEDULA']  );//quitar separador punto
+              
+
                  $r->fill(  $Params  );  
                  $r->save();
-                 echo json_encode( array('idnro'=>  $r->IDNRO  ));    
-                DB::commit();
+
+                 $id_aboga=  $r->IDNRO;
+                 $future_nick= session("system"). "_".$r->CEDULA;
+                 $raw_pass= Helper::generar_password();
+               //  echo json_encode( array('idnro'=>  $r->IDNRO  ));    
+                 $usu_rela=  User::where("ABOGADO", $id_aboga)->first();
+                 if( is_null($usu_rela)){
+                     $usu_rela= new User();
+                     $usu_rela->nick= $future_nick;
+                     $usu_rela->tipo="S";
+                     $usu_rela->pass= Hash::make( $raw_pass) ;
+                     $usu_rela->email= $r->EMAIL;
+                     $usu_rela->ABOGADO=  $r->IDNRO;
+                     $usu_rela->save();
+                    $this->enviar_email_credencial( $r->EMAIL, $future_nick, $raw_pass, $raw_pin_third_party);
+                   
+                     
+                }else{
+                    //ACTUALIZAR EMAIL SI HA CAMBIADO
+                    if(  $usu_rela->email != $r->EMAIL   )
+                    {
+                        $usu_rela->email=  $r->EMAIL;
+                        $usu_rela->save();
+                      //  $this->enviar_email_credencial( $r->EMAIL, $future_nick, $raw_pass);
+                    }
+                } 
+
+                 DB::commit();
+                 //enviar email 
+              
+                
            
             } catch (\Exception $e) {
                 DB::rollback();
@@ -129,6 +200,33 @@ class AbogadoController extends Controller
 
 
 
+
+
+     public  function  regenerar_pin(  $id_abogado){
+        $this->obtenerConexion();
+         $abogado=  Abogados::find(  $id_abogado );
+         if( is_null( $abogado) ){
+            return  response()->json(  ["error"=> "ID de abogado no existe"  ] );
+         }else{
+
+            $rawpin= Helper::generar_password();
+            $abogado->PIN=  Hash::make( $rawpin );
+            if( $abogado->save()){
+                $correo_ob= new Correo();
+                $correo_ob->setTitulo("PIN actualizado");
+                $correo_ob->setDestinatario( $abogado->EMAIL);
+                $correo_ob->setMensaje( "Su nuevo PIN es $rawpin" );
+                $genemail= new GenericMail( $correo_ob );
+                $this->enviar_email_credencial(   $abogado->EMAIL,  $genemail );
+                if( session("tipo") == "SA")
+                return  response()->json(  ["ok"=> "El nuevo PIN es $rawpin"  ] );
+                else 
+                return  response()->json(  ["ok"=> "PIN regenerado"  ] );
+            }else{
+                return  response()->json(  ["error"=> "Error al regenerar el PIN"  ] );
+            }
+         }
+     }
 
      public function delete( $id){
          $this->obtenerConexion();

@@ -29,20 +29,20 @@ $ruta_form=   $OPERACION == "A" ?  url("abogados/create")  :  url("abogados/edit
 @endif 
 
 <div class="input-group">
-<input  oninput="solo_numero_mas_formato(event)" class="form-control mb-1 form-control-sm mb-1" value="{{isset($DATO)?$DATO->CEDULA: ''}}"  maxlength="9" class="input--style-1" type="text" placeholder="Cédula" name="CEDULA">
+<input id="CEDULA"  oninput="solo_numero_mas_formato(event)" class="form-control mb-1 form-control-sm mb-1" value="{{isset($DATO)?$DATO->CEDULA: ''}}"  maxlength="9" class="input--style-1" type="text" placeholder="Cédula" name="CEDULA">
 </div>
 
 
 <div class="input-group">
-<input  class="form-control mb-1 form-control-sm mb-1" value="{{isset($DATO)?$DATO->NOMBRE: ''}}" maxlength="60" class="input--style-1" type="text" placeholder="Nombres" name="NOMBRE">
+<input id="NOMBRE"  class="form-control mb-1 form-control-sm mb-1" value="{{isset($DATO)?$DATO->NOMBRE: ''}}" maxlength="60" class="input--style-1" type="text" placeholder="Nombres" name="NOMBRE">
 </div>
 
 <div class="input-group">
-<input  class="form-control mb-1 form-control-sm  mb-1"  value="{{isset($DATO)?$DATO->APELLIDO: ''}}" maxlength="60" class="input--style-1" type="text" placeholder="Apellidos" name="APELLIDO">
+<input id="APELLIDO"  class="form-control mb-1 form-control-sm  mb-1"  value="{{isset($DATO)?$DATO->APELLIDO: ''}}" maxlength="60" class="input--style-1" type="text" placeholder="Apellidos" name="APELLIDO">
 </div>
 
 <div class="input-group">
-<input  class="form-control mb-1 form-control-sm mb-1" value="{{isset($DATO)?$DATO->EMAIL: ''}}"  maxlength="60" class="input--style-1" type="text" placeholder="E-mail" name="EMAIL">
+<input  id="EMAIL" class="form-control mb-1 form-control-sm mb-1" value="{{isset($DATO)?$DATO->EMAIL: ''}}"  maxlength="60" class="input--style-1" type="text" placeholder="E-mail" name="EMAIL">
 </div>
 						
 						
@@ -96,6 +96,13 @@ function solo_numero_mas_formato(ev){
 async    function enviar(ev){
         ev.preventDefault();
 
+        //CAMPOS VACIOS
+      if( $("#CEDULA").val()==""  ||  $("#NOMBRE").val()==""  ||  $("#APELLIDO").val()=="" ||  $("#EMAIL").val()=="")
+      {
+        alert(" POR FAVOR COMPLETAR LOS CAMPOS VACIOS"); return;  
+      }
+
+
         $( "#formstatus").html(  "<div  style='z-index:10000; position: absolute; left: 45%;'   class='spinner mx-auto'><div class='spinner-bar'></div></div>" );
 
         let config= { method: 'POST',  body: $(ev.target).serialize(), headers: { 'Content-Type':'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }  } ;
@@ -104,7 +111,7 @@ async    function enviar(ev){
         let resp_json= await resp_en_br.json();
         if( "idnro" in resp_json ){      
             $("#formstatus").html(    "" );
-            $()
+            $("#modal-form").modal("hide");
             if( "act_grilla" in window )  act_grilla();
 
         }  else   $("#formstatus").html(  respuesta1.error );

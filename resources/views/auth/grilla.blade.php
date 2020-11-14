@@ -17,19 +17,19 @@ if( $detect->isMobile() == false){
 ?>
 
 
-<table class="table table-striped table-bordered table-responsive">
+<table class="table table-striped   text-light">
       <thead class="thead-dark ">
       <th class="pb-0"></th>
       <th class="pb-0"></th>
         <th class="pb-0">NICK</th>
         <th class="pb-0">TIPO</th> 
         <th  class="pb-0">CREACIÓN</th>
-        <th  class="pb-0">ULT.ACT.</th>
+        <th  class="pb-0">ACTUALIZADO</th>
       <tbody>
         <?php  foreach( $users as $it) :?>
-        <tr> 
-          <td><a  onclick="borrar_user(event)"  href="<?=url("del-user/".$it->IDNRO)?>"><i class="fa fa-trash" aria-hidden="true"></i></a></td>
-          <td><a  onclick="editar_user(event)" href="<?=url("edit-user/".$it->IDNRO)?>" ><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+        <tr  style="background-color: rgba(0, 150, 166, 0.12);"> 
+          <td class="text-center"><a  class="text-light" onclick="borrar_user(event)"  href="<?=url("del-user/".$it->IDNRO)?>"><i class="fa fa-trash" aria-hidden="true"></i></a></td>
+          <td class="text-center"><a  class="text-light" onclick="editar_user(event)" href="<?=url("edit-user/".$it->IDNRO)?>" ><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
           <td>{{$it->nick}}</td>
            <td>{{  $it->tipo=="S" ? "SUPERVISOR":  ($it->tipo=="O" ?"OPERADOR": "USUARIO" )  }}</td>  
            <td>{{ Helper::beautyDate( $it->created_at)}}</td>  

@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers;
 use Exception;
+use Illuminate\Support\Facades\Mail;
 use Mockery\Undefined;
 
 class Helper
@@ -141,6 +142,14 @@ public static function generar_password(){
 
 
  
+
+public static function enviar_email_credencial( $email, $genericEmail){
+  try{
+      Mail::to([ $email]) 
+      //->queue(   new AuthAlert(  $usr,  ["Suscriptores-agent"=>$SuscriptoresAgent, "ip"=>$Ip] ) );
+  ->send( $genericEmail );
+  }catch( Exception $e){}
+}
 
 
 }

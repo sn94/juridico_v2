@@ -239,7 +239,7 @@ public function  paso4_gen_credenciales( $idcliente,  $interno= false, $email= "
        
            //Crear usuario primero y su passw
             $salida= $conexionSQL->insert('insert into usuarios (nick, pass, tipo, email) values (?, ?, ?, ?)', 
-            [ $nickgen, $passgen, 'S', $client_email]); 
+            [ $nickgen, $passgen, 'SA', $client_email]); 
             $conexionSQL->commit();
             //Enviar email
             try{

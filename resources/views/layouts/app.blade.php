@@ -121,7 +121,7 @@ endif;
      </style>
 </head>
 
-<body class="bg-dark">
+<body >
     <div class="app">
         <div class="app-body">
             <div class="app-sidebar sidebar-slide-left">
@@ -134,7 +134,7 @@ endif;
                     <p class="username">
                     Estudio Jurídico Sa.<br><small>
                         {{session('nick').","}}
-                    {{  session('tipo')== "S" ? "SUPERVISOR": (session('tipo')=="U" ? "USUARIO" : "OPERADOR") }}
+                    {{ session('tipo')== "SA" ? "Superadmin" :  (session('tipo')== "S" ? "SUPERVISOR": (session('tipo')=="U" ? "USUARIO" : "OPERADOR")) }}
 
                     </small>
                     </p> 
@@ -170,11 +170,15 @@ endif;
                             <li><a href="<?=  url("plan-de-cuentas") ?>" class="sidebar-nav-link">Plan de cta.</a></li> 
                         </ul>
                     </li>
-                    @if( session("tipo") == "S")
+                    @if( session("tipo") == "S"  ||  session("tipo") == "SA")
                     <li class="sidebar-nav-group"><a href="#reference" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> AUXILIARES</a>
                         <ul id="reference" class="collapse" data-parent="#sidebar-nav">
                             <li><a href="<?= url("auxiliar")?>" class="sidebar-nav-link">Datos aux.</a></li>
                             <li><a href="<?= url("users")?>" class="sidebar-nav-link">Usuarios</a></li>
+                            @if( session("tipo") == "SA")
+                            <li><a href="<?= url("abogados")?>" class="sidebar-nav-link">Abogados</a></li> 
+                            @endif 
+                            
                             <li><a href="<?= url("params")?>" class="sidebar-nav-link">Parámetros</a></li> 
 
                         </ul>
@@ -198,7 +202,7 @@ endif;
                         @if( session()->has("abogado") )
                         ABOGADO: {{session("abogado")}}
                         @else
-                        <a style="color: yellow;" href="#" onclick="$('#modal-abogado').modal('show')">«Ingresar código de abogado»</a>
+                        <a style="color: yellow;font-size: 14px;" href="#" onclick="$('#modal-abogado').modal('show')">«Ingresar código de abogado»</a>
                         <div id="abogado-view-error"></div>
                         @endif 
 
@@ -264,14 +268,18 @@ endif;
     <div class="modal-content p-2 bg-dark text-light" >
 
     <div class="modal-header">
-        <h5 class="modal-title">Ingrese el PIN de abogado</h5>
+        <h5 class="modal-title"> Credenciales </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
-      
+      <label for="">Código de Abogado:</label>
       <input class="form-control" type="text" id="abogado_code" >
+      @if( session("tipo") !=  "SA")
+      <label for="">PIN:</label>
+      <input class="form-control" type="password" id="abogado_pin" >
+      @endif
     
 
       <div class="modal-footer">
@@ -285,9 +293,13 @@ endif;
   async  function enviar_codigo_abogado( ev){
         ev.preventDefault();
         let lawyer=  $("#abogado_code").val();
-        let url= ev.target.href+ "/"+lawyer;
+        let lawyer_pin= $("#abogado_pin").val();
+        let url= ev.target.href;
 
-        let res=  await fetch(  url );
+        let body= { abogado_code: lawyer, abogado_pin:  lawyer_pin };
+        let setting= { "method":"POST", "body":   JSON.stringify(body) ,headers: {"Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest",  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')} } ;
+        let res=  await fetch(  url , setting);
+       
         if( res.redirected) window.location=  res.url;
         else{
             let res_j=  await res.json();

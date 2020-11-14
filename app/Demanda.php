@@ -21,6 +21,8 @@ class Demanda extends Model
 'EXPED_NRO', 'FOLIO_EXPED', 'ADJ_LEV_EMB_FEC', 'LEV_EMB_CAP_NRO', 'LEV_EMB_CAP_FEC', 'LEV_EMB_CAP_INST',
 'CON_DEPOSITO', 'OBS', 'ARR_EXTRAJUDI',  'ABOGADO'];
 
+ 
+
     public $timestamps = false;
 
  

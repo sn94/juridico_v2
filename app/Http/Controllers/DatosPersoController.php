@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Arreglo_extrajudicial;
+use App\Contraparte;
 use App\Demanda;
 use App\Demandados;
+use App\Honorarios;
 use App\Http\Controllers\Controller;
 use App\Notificacion;
 use App\Observacion;
@@ -109,13 +112,11 @@ class DatosPersoController extends Controller
     NUEVA DEMANDADO
     */
     public function nuevo(Request $request){
-        if( ! strcasecmp(  $request->method() , "post"))  {
+        if(  $request->isMethod("POST") )  {
             //Quitar el campo _token
             $Params=  $request->input(); 
-            //Devuelve todo elemento de Params que no este presente en el segundo argumento
-            /*$Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ), function($ar1, $ar2){
-            if( $ar1 == $ar2) return 0;    else 1; 
-            } ); */
+            $Params['ABOGADO']= session("abogado");
+            
             //***********TRANSACCION SQL****** */
             DB::beginTransaction();
             try {
@@ -123,16 +124,15 @@ class DatosPersoController extends Controller
               $modelo= new Demandados();  $modelo->fill( $Params );  $modelo->save();
               //$ultimoIdGen=  $modelo->IDNRO; 
               /**generar registro en demanda, en notifi y en observacion */
-              $deman= new Demanda();   $deman->CI= $modelo->CI; $deman->save();
-              $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->save();
-              $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->save(); 
+              $deman= new Demanda();   $deman->CI= $modelo->CI; $deman->ABOGADO=  session("abogado"); $deman->save();
+              $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->ABOGADO=  session("abogado"); $noti->save();
+              $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->ABOGADO=  session("abogado"); $obs->save();
+              $contra= new Contraparte(); $contra->IDNRO= $deman->IDNRO;  $contra->ABOGADO_=  session("abogado"); $contra->save();
+              $obarre= new Arreglo_extrajudicial();  $obarre->IDNRO= $deman->IDNRO;  $obarre->ABOGADO= session("abogado"); $obarre->save();
+               $obhonorario= new Honorarios(); $obhonorario->IDNRO= $deman->IDNRO; $obhonorario->ABOGADO=  session("abogado"); $obhonorario->save();
               DB::commit();
               echo json_encode( 
-                array(
-                'IDNRO'=> $modelo->IDNRO,
-                'ci'=> $modelo->CI,  
-                'nombre'=> $modelo->TITULAR,
-                 "id_demanda"=> $deman->IDNRO)   );
+                array(  'IDNRO'=> $modelo->IDNRO,  'ci'=> $modelo->CI,     'nombre'=> $modelo->TITULAR,   "id_demanda"=> $deman->IDNRO)   );
             } catch (\Exception $e) {
                 DB::rollback();
                 echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );

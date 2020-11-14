@@ -29,7 +29,6 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
       </div>
     </div>
 
-
 <?php endif; ?>
 
  
@@ -299,9 +298,6 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
                     endforeach;  ?>
              </select>  </div>
          </div>
-
-  
-   
 </div>
 
 </div><!--contenedor panel 3 y 4 -->

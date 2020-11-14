@@ -20,7 +20,7 @@ if( $detect->isMobile() == false){
 @php 
 if( !isset( $abogados) ) return;
 @endphp
-<table class="table table-striped table-bordered table-hover text-light">
+<table class="table table-striped   table-dark table-hover text-light">
       <thead class="thead-dark ">
       <th class="pb-0"></th>
       <th class="pb-0"></th>
@@ -29,20 +29,22 @@ if( !isset( $abogados) ) return;
         <th  class="pb-0">DOMICILIO</th>
         <th  class="pb-0">TELÉFONO</th>
         <th  class="pb-0">CELULAR</th>
+        <th class="pb-0">PIN</th>
         <th  class="pb-0">REGISTRO</th>
         <th  class="pb-0">MODIFICADO</th>
       <tbody>
         <?php  
       
         foreach( $abogados as $it) :?>
-        <tr> 
+        <tr style="background-color: rgba(0, 150, 166, 0.12);"> 
           <td class="text-center"><a class="text-light"  onclick="borrarAbogado(event)"  href="<?=url("abogados/delete/".$it->IDNRO)?>"><i class="fa fa-trash" aria-hidden="true"></i></a></td>
           <td class="text-center"><a  class="text-light" onclick="editarAbogado(event)" href="<?=url("abogados/edit/".$it->IDNRO)?>" ><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
-          <td>{{  $it->CEDULA  }}</td> 
+          <td>{{ Helper::number_f( $it->CEDULA ) }}</td> 
           <td>{{$it->NOMBRE." ".$it->APELLIDO}}</td>
            <td>{{  $it->DOMICILIO  }}</td>  
            <td>{{  $it->TELEFONO  }}</td>  
-           <td>{{  $it->CELULAR  }}</td>  
+           <td>{{  $it->CELULAR  }}</td> 
+           <td><a class="btn btn-sm btn-dark" onclick="regenerar_pin(event)" href="<?=url("abogados/pin-regen/".$it->IDNRO)?>">Regenerar</a></td> 
            <td>{{ Helper::beautyDate( $it->created_at)}}</td>  
            <td>{{  Helper::beautyDate($it->updated_at) }}</td>  
           </tr>
@@ -65,7 +67,7 @@ if( !isset( $abogados) ) return;
       //BORRA origen de demanda
 function borrarAbogado( ev){//Objeto event   DIV tag selector to display   success handler
 ev.preventDefault();
-let divname="#viewform"; 
+let divname="#status-result"; 
 if(  ! confirm("SEGURO QUE QUIERE BORRARLO?") ) return;
 $.ajax(
      {
@@ -80,7 +82,8 @@ $.ajax(
             act_grilla();
        },
        error: function(){
-         $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
+         $( divname).html(  "" );
+         alert("Server error"); 
        }
      }
    );
@@ -108,6 +111,33 @@ function editarAbogado( ev){//Objeto event   DIV tag selector to display   succe
              }
         }
       );
+}/*****end ajax call* */
+
+
+
+/**Re generar pin */
+
+ 
+      function regenerar_pin( ev){//Objeto event   DIV tag selector to display   success handler
+ev.preventDefault();
+let divname="#status-result"; 
+$.ajax(
+     {
+       url:  ev.currentTarget.href,
+       method: "get", beforeSend: function(){
+         $( divname).html(  "<div  style='z-index:10000; position: absolute; left: 45%;'   class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+       },
+       dataType:"json",
+       success: function(r){
+        $( divname).html( ""); 
+           if("error" in r)   alert( r.error) ; 
+           else alert(  r.ok );
+       },
+       error: function(){
+         $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
+       }
+     }
+   );
 }/*****end ajax call* */
 
     </script>

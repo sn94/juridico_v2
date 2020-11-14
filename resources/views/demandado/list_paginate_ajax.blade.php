@@ -13,12 +13,12 @@ $detect= new Mobile_Detect();
 @if( sizeof( $lista) <= 0 )
 <p class="text-light"> Sin registros </p>
 
-@else:
+@else
 
 
         @if ($detect->isMobile() == false)
         
-      <table id="demandadostable" class="table table-responsive table-bordered table-striped">
+      <table id="demandadostable" class="table table-bordered table-striped">
         <thead class="thead-dark">
             <tr>
               <th></th>

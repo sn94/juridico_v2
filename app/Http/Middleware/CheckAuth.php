@@ -30,8 +30,8 @@ class CheckAuth
           'password' => env("DB_PASSWORD"),
           'charset' => 'utf8',
           'prefix' => '',
-      );
-   
+          
+        );
       Config::set('database.connections.mysql', $configDb);
      //$conexionSQL = DB::connection('mysql');
      return $systemid;
@@ -67,10 +67,13 @@ class CheckAuth
               $this->obtenerConexion(); return $next($request);//dejar pasar
             }else{
               //control codigo abogado
-              if( preg_match("/abogados/",  $request->path() )  > 0 )  return $next($request);//dejar pasar
+              if( (preg_match("/abogados/",  $request->path() )  > 0)  ||  (preg_match("/user/",  $request->path() )  > 0)) 
+              return $next($request);//dejar pasar
+              else
               return redirect('abogados'); 
             }
-             
+
+           // return $next($request);//dejar pasar
            }
            
          }else{

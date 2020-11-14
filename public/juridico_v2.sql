@@ -25,6 +25,7 @@ CREATE TABLE  `abogados` (
    `CELULAR` VARCHAR(20) NULL , 
    `CEDULA` VARCHAR(9) NULL ,
    `EMAIL`  VARCHAR(60)  NULL, 
+   `PIN` VARCHAR(60) NULL,
    `created_at` TIMESTAMP NULL,
    `updated_at` TIMESTAMP NULL,
    PRIMARY KEY (`IDNRO`)) ENGINE = InnoDB; 
@@ -769,8 +770,9 @@ CREATE TABLE `usuarios` (
   `IDNRO` int(10) UNSIGNED NOT NULL,
   `nick` varchar(20) NOT NULL,
   `pass` varchar(60) NOT NULL,
-  `tipo` char(1) NOT NULL,
+  `tipo` char(2) NOT NULL,
   `email` varchar(60) DEFAULT NULL,
+  `ABOGADO` int(10) UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

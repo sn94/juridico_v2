@@ -9,7 +9,7 @@
 
 <?php  
 //******SOLO SUPERVISOR********* */
-if ($show == "S") {  ?>
+if (  $show == "S") {  ?>
      
 <div class="row">
 

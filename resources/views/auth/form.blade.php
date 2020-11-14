@@ -4,8 +4,9 @@ $ruta= isset($OPERACION)?  ($OPERACION=="A" ? url("new-user"): url("edit-user") 
 
  
 
-<form  id="userform" method="POST" action="<?= $ruta?>"  onsubmit="ajaxCall(event)">
-                        @csrf
+<form class="text-light"  id="userform" method="POST" action="<?= $ruta?>"  onsubmit="ajaxCall(event)">
+
+@csrf
 
 
 <?php if( isset($OPERACION) && $OPERACION== "M"): ?>
@@ -16,7 +17,8 @@ $ruta= isset($OPERACION)?  ($OPERACION=="A" ? url("new-user"): url("edit-user") 
            <div class="col-12 col-sm-4 col-md-4 col-lg-3">
                         <div class="form-group">
                             <label >NICK:</label>
-                            <input   maxlength="20"  value="{{isset($DATO->nick)?$DATO->nick: ''}}" name="nick"  type="text"  class="form-control form-control-sm">
+                            
+                            <input prefijo="{{session('system').'_'}}" oninput="keepPrefix(event)"   maxlength="20"  value="<?=isset($DATO->nick)?$DATO->nick: (session("system")."_") ?>" name="nick"  type="text"  class="form-control form-control-sm">
                         </div>
                         </div>
                         <div class="col-12 col-sm-4 col-md-4 col-lg-3">
@@ -73,7 +75,27 @@ $ruta= isset($OPERACION)?  ($OPERACION=="A" ? url("new-user"): url("edit-user") 
       
 <script>
 
+
+
+
+  
+  function keepPrefix(ev){
+    let posicionRef=  ev.target.value.indexOf("_");
+    let prefij= $(ev.target).attr("prefijo");
+    let l_prefij=  prefij.length;
+
+    let parts= ev.target.value.split( prefij );
+    let resto= parts[1]== undefined ? "" :  parts[1];
+    ev.target.value= prefij+ resto;
+    console.log(  ev,   $(ev.target).val() ); 
+
+     
     
+  }
+
+
+
+
 //inserta, modifica registros de parametros y origen de demanda
 function ajaxCall( ev){//Objeto event   DIV tag selector to display   success handler
 ev.preventDefault(); 

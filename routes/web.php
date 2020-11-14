@@ -88,7 +88,7 @@ Route::get('signout',   'UserController@sign_out');
 
 
 // C R E A R SESION ABOGADO 
-Route::get("session-abogados/{codigo}", "AbogadoController@select_cod_abogado"); 
+Route::post("session-abogados", "AbogadoController@select_cod_abogado"); 
 
 
 
@@ -189,26 +189,28 @@ Route::get('filtro-orden/{col}/{sentido}',   'FilterController@filtro_orden');
 
 
 
+Route::group(['middleware' => 'superadmin'], function () {
 
-
-
-
-/** ** SUPERVISOR  */
-Route::group(['middleware' => 'admin'], function () {
-
-
+    
     /********
      * ABOGADOS
      * 
-     ***********/
-    
-    // O T R O S METODOS
+     ***********/ 
     Route::get("abogados", "AbogadoController@index"); 
     Route::get("abogados/create", "AbogadoController@cargar"); 
     Route::post("abogados/create", "AbogadoController@cargar"); 
     Route::get("abogados/delete/{id}", "AbogadoController@delete"); 
     Route::get("abogados/edit/{id}", "AbogadoController@cargar"); 
     Route::post("abogados/edit/{id}", "AbogadoController@cargar"); 
+    Route::get("abogados/pin-regen/{id}", "AbogadoController@regenerar_pin"); //regenerar pin
+
+} );
+
+
+
+/** **  administrador  */
+Route::group(['middleware' => 'admin'], function () {
+
 
 
 
@@ -258,7 +260,7 @@ Route::post('new-user',   'UserController@agregar');
 Route::get('edit-user/{idnro}',   'UserController@editar');
 Route::post('edit-user',   'UserController@editar');
 Route::get('del-user/{id}',   'UserController@borrar');
-Route::get('list-user',   'UserController@list');
+ 
 
 
 }  );

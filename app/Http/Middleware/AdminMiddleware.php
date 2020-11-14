@@ -16,8 +16,15 @@ class AdminMiddleware
     public function handle($request, Closure $next)
     {
 
-        if( session("tipo") == "S")
-        return $next($request);
+        if( session("tipo") == "S"  ||   session("tipo") == "SA")
+
+     {  
+          if( (session("tipo") == "S" )  && (preg_match("/abogados/",  $request->path() )  > 0))
+        return redirect("denegado");
+        else
+          return $next($request);
+        }
+           
         else
         { 
             return redirect("denegado");

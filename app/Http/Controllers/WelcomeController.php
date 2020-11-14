@@ -53,7 +53,7 @@ class WelcomeController extends Controller
     public function index( Request $request){
     $this->obtenerConexion();   
         
-        if ($request->session()->get('tipo') == "S"){
+        if ( session('tipo') == "S"  || session("tipo")== "SA"  ){
             $Parametros= Parametros::first();
              
             if(  is_null(  $Parametros)  ||  $Parametros->SHOW_COUNTERS == "S"){

@@ -27,7 +27,7 @@
 function act_grilla(){
   $.ajax(
      {
-       url: "<?=url("list-user")?>",
+       url: "<?=url("users")?>",
        method: "get", 
        beforeSend: function(){ $( "#list-user").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
        },

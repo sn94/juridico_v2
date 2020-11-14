@@ -16,7 +16,7 @@ class Abogados extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [  'NOMBRE','APELLIDO','DOMICILIO','TELEFONO','CELULAR', 'CEDULA' ,  'EMAIL'];
+    protected $fillable= [  'NOMBRE','APELLIDO','DOMICILIO','TELEFONO','CELULAR', 'CEDULA' ,  'EMAIL', 'PIN'];
 
     public $timestamps = true;
  

@@ -11,6 +11,10 @@
 
 
 
+<div id="status-result">
+
+</div>
+
 
 
 @if( isset($sin_abogados) )
@@ -61,9 +65,7 @@
 <script> 
  
 
-window.onload= function(){   $("body").addClass("bg-dark");  };
-
-
+ 
 
 function mostrarFormulario(ev){
    ev.preventDefault();

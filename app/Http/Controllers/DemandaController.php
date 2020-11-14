@@ -175,6 +175,7 @@ class DemandaController extends Controller
             //Quitar el campo _token
             $Params=  $request->input();  
             $Params['SALDO']=  $Params['DEMANDA'];
+            $Params['ABOGADO']=  session("abogado");
             
             /***ini transac */ 
              DB::beginTransaction();
@@ -182,11 +183,11 @@ class DemandaController extends Controller
                 $deman=new Demanda();
                 $deman->fill(  $Params );
                 $deman->save();
-               $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->save();
-               $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->save();
-               $contra= new Contraparte(); $contra->IDNRO= $deman->IDNRO; $contra->save();
-               $obarre= new Arreglo_extrajudicial();  $obarre->IDNRO= $deman->IDNRO;  $obarre->save();
-
+               $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->ABOGADO=  session("abogado"); $noti->save();
+               $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->ABOGADO=  session("abogado"); $obs->save();
+               $contra= new Contraparte(); $contra->IDNRO= $deman->IDNRO;  $contra->ABOGADO_=  session("abogado"); $contra->save();
+               $obarre= new Arreglo_extrajudicial();  $obarre->IDNRO= $deman->IDNRO;  $obarre->ABOGADO= session("abogado"); $obarre->save();
+                $obhonorario= new Honorarios(); $obhonorario->IDNRO= $deman->IDNRO; $obhonorario->ABOGADO=  session("abogado"); $obhonorario->save();
                DB::commit();
                echo json_encode( array( 'ci'=> $deman->CI, "id_demanda"=> $deman->IDNRO) );
              } catch (\Exception $e) {

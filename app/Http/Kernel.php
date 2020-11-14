@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'superadmin'=> \App\Http\Middleware\SuperadminMiddleware::class,
         'admin'=> \App\Http\Middleware\AdminMiddleware::class,
         'operador'=> OperadorMiddleware::class,
         'adminopera'=>AdminOperadorMiddleware::class,

@@ -19,7 +19,7 @@ class User extends Authenticatable
 
     protected $primaryKey = 'IDNRO';
     protected $fillable = [
-        'nick', 'tipo', 'pass', 'email'
+        'nick', 'tipo', 'pass', 'email', 'ABOGADO'
     ];
 
     public $timestamps = true;
