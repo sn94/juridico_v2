@@ -4,7 +4,7 @@ $ruta= isset($OPERACION)?  ($OPERACION=="A" ? url("new-user"): url("edit-user") 
 
  
 
-<form class="text-light"  id="userform" method="POST" action="<?= $ruta?>"  onsubmit="ajaxCall(event)">
+<form   id="userform" method="POST" action="<?= $ruta?>"  onsubmit="ajaxCall(event)">
 
 @csrf
 
@@ -49,17 +49,36 @@ $ruta= isset($OPERACION)?  ($OPERACION=="A" ? url("new-user"): url("edit-user") 
                         </div> 
                         </div>
 
+                        @if( !isset($DATO)  ||   ($DATO->tipo  != "SA"  && $DATO->tipo  != "S") )
                         <div class="col-12 col-sm-3 col-md-4 col-lg-3">
                         <div class="form-group">
                             <label >CATEGORÍA:</label>
-                            <select class="form-control form-control-sm" name="tipo" >
-                          <option {{isset($DATO->tipo)?($DATO->tipo=='S' ? 'checked' : ''): ''}} value="S">SUPERVISOR</option>
+                            <select style="border-radius: 20px;" class="form-control form-control-sm" name="tipo" >
+                <!--          <option isset($DATO->tipo)?($DATO->tipo=='S' ? 'checked' : ''): ''   value="S">SUPERVISOR</option> -->
                           <option {{isset($DATO->tipo)?($DATO->tipo=='O' ? 'checked' : ''): ''}} value="O">OPERADOR</option>
                           <option {{isset($DATO->tipo)?($DATO->tipo=='U' ? 'checked' : ''): ''}} value="U">USUARIO</option>
 
                             </select> 
                         </div> 
                         </div>
+                        @endif
+
+                        @if( !isset($DATO)  || ($DATO->tipo  != "SA"  && $DATO->tipo  != "S"))
+                        <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+                        <div class="form-group">
+                          <label for="">Asignar asistente al abogado :</label>
+                          <select name="ABOGADO" class="form-control form-control-sm" style="border-radius: 20px;"  id="ABOGADO-LIST">
+                          @foreach( $abogados as $abo)
+                          <option value="{{$abo->IDNRO}}">  {{$abo->NOMBRES}}</option>
+                          @endforeach
+                          </select>
+                        </div>
+                        </div>
+                        @elseif(  session("tipo") == "S")
+                        <input type="hidden" name="ABOGADO" value="{{session('abogado')}}">
+                        @endif
+                       
+
 
                         <div class="col-12 col-sm-5 col-md-2 col-lg-2">
                         <div class="form-group">
@@ -70,13 +89,14 @@ $ruta= isset($OPERACION)?  ($OPERACION=="A" ? url("new-user"): url("edit-user") 
                         </div>
                    
            </div>
+
+        
                            
 </form>
       
 <script>
 
-
-
+ 
 
   
   function keepPrefix(ev){

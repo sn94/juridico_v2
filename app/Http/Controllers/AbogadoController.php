@@ -125,6 +125,10 @@ class AbogadoController extends Controller
                 $r= null;
 
                 if(  $id == 0){  //creacion
+
+                    //hay registros? crear uno en blanco
+                    if( Abogados::count() == 0)
+                    { $first_lawyer= new Abogados(); $first_lawyer->save(); }
                     $r= new Abogados();
                      //Generar PIN para permitir uso del ID a terceros
                     $raw_pin_third_party=  Helper::generar_password();
@@ -141,7 +145,7 @@ class AbogadoController extends Controller
                  $id_aboga=  $r->IDNRO;
                  $future_nick= session("system"). "_".$r->CEDULA;
                  $raw_pass= Helper::generar_password();
-               //  echo json_encode( array('idnro'=>  $r->IDNRO  ));    
+                 
                  $usu_rela=  User::where("ABOGADO", $id_aboga)->first();
                  if( is_null($usu_rela)){
                      $usu_rela= new User();
@@ -151,21 +155,34 @@ class AbogadoController extends Controller
                      $usu_rela->email= $r->EMAIL;
                      $usu_rela->ABOGADO=  $r->IDNRO;
                      $usu_rela->save();
-                    $this->enviar_email_credencial( $r->EMAIL, $future_nick, $raw_pass, $raw_pin_third_party);
+                        //Creacion de usuario
+                        $correo_ob= new Correo();
+                        $correo_ob->setTitulo("Credenciales de acceso al Sistema de Juicios");
+                        $correo_ob->setDestinatario( $r->EMAIL);
+                        $correo_ob->setMensaje( "Usuario: $future_nick <br>Password: $raw_pass <br>Recuerde que puede cambiar su nick y contraseña cuando lo desee" );
+                        $genemail= new GenericMail( $correo_ob );
+                        $this->enviar_email_credencial(   $r->EMAIL,  $genemail );
+                   // $this->enviar_email_credencial( $r->EMAIL, $future_nick, $raw_pass, $raw_pin_third_party);
                    
                      
                 }else{
+                    $tempoemail=  $usu_rela->email;
                     //ACTUALIZAR EMAIL SI HA CAMBIADO
                     if(  $usu_rela->email != $r->EMAIL   )
                     {
                         $usu_rela->email=  $r->EMAIL;
                         $usu_rela->save();
-                      //  $this->enviar_email_credencial( $r->EMAIL, $future_nick, $raw_pass);
+                        $correo_ob= new Correo();
+                        $correo_ob->setTitulo("Dirección de correo electrónico actualizada");
+                        $correo_ob->setDestinatario( $r->EMAIL);
+                        $correo_ob->setMensaje( "Recientemente a cambiado su email de referencia, de $tempoemail a $r->EMAIL " );
+                        $genemail= new GenericMail( $correo_ob );
+                        $this->enviar_email_credencial(   $r->EMAIL,  $genemail );
                     }
                 } 
 
                  DB::commit();
-                 //enviar email 
+                 echo json_encode( array('idnro'=>  $r->IDNRO  )); 
               
                 
            
@@ -213,9 +230,10 @@ class AbogadoController extends Controller
             $abogado->PIN=  Hash::make( $rawpin );
             if( $abogado->save()){
                 $correo_ob= new Correo();
+                //Actualizacion de PIN notifi. en Email
                 $correo_ob->setTitulo("PIN actualizado");
                 $correo_ob->setDestinatario( $abogado->EMAIL);
-                $correo_ob->setMensaje( "Su nuevo PIN es $rawpin" );
+                $correo_ob->setMensaje( "Código abogado: $abogado->IDNRO, Su nuevo PIN es $rawpin" );
                 $genemail= new GenericMail( $correo_ob );
                 $this->enviar_email_credencial(   $abogado->EMAIL,  $genemail );
                 if( session("tipo") == "SA")

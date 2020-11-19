@@ -63,10 +63,12 @@ ev.preventDefault();
        success: function(res){
         $(divname).html("");
            let r= JSON.parse(res);
-           if("ok" in r)  alert( r.ok);
-           
-            else alert( r.error);
-            Array.prototype.forEach.call( document.getElementById("auxiform").elements ,  function(ar){ ar.value= ""; } );
+           if("error" in r)  alert( r.error); 
+            Array.prototype.forEach.call( document.getElementById("auxiform").elements , 
+             function(ar){ 
+               if( ar.type != "hidden") ar.value= ""; }
+             
+              );
           act_grilla();
            
        },

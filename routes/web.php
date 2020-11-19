@@ -131,10 +131,8 @@ Route::post( "demandas-agregar", 'DemandaController@nueva_demandan');
 //EDICION DE DATOS PERSONALES
 Route::get( "demandas-editar/{iddeman}", 'DemandaController@editar_demandan')->middleware("adminopera");
 Route::get( "demandas-editar/{iddeman}/{tab}", 'DemandaController@editar_demandan')->middleware("adminopera");
-//solo formulario de editar demanda
-//Route::get( "demandas-editar/{iddeman}", 'DemandaController@editar_demanda_form')->middleware("adminopera");
-/* * * */
 Route::post( "demandas-editar", 'DemandaController@editar_demandan');
+
 Route::post("enotifi", "NotifiController@editar");
 Route::post("eobser", "ObservaController@editar");
 Route::get("edemandado/{idnro}", "DatosPersoController@editar")->middleware("adminopera");
@@ -223,7 +221,7 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get("ddemandado/{ci}", "DatosPersoController@borrar"); //Borrar datos personales
     Route::get( "demandas-borrar/{iddeman}", 'DemandaController@borrar');//Borrar demanda
     Route::get("del-noti-venc", "NotifiController@borrar_noti_vencidas");//borrar notificaciones vencidas
-    Route::get("del-noti-venc", "NotifiController@borrar_noti_vencidas");//borrar notificaciones vencidas
+    //Route::get("del-noti-venc", "NotifiController@borrar_noti_vencidas");//borrar notificaciones vencidas
     Route::get("dcuentajudi/{idnro}", "JudicialController@delete"); 
     Route::get('dfiltro/{id}',   'FilterController@borrar');
 
@@ -362,6 +360,7 @@ Route::get('list-msg/{TIPO}',   'MessengerController@listar');
 
 
 /**MODULO INFORMES***** */
+
 /********informes arreglos extrajudiciales*************** */
 Route::get('informes-arre-extra',   'InformesController@informes_arr_extr');
 Route::get('informes-arre-extra/{html}',   'InformesController@informes_arr_extr');
@@ -373,11 +372,13 @@ Route::get('informes-arregloextrajudicial/{html}',   'InformesController@informe
 Route::post('informes-arregloextrajudicial',   'InformesController@informes_arreglos_resumen');
 Route::post('informes-arregloextrajudicial/{html}',   'InformesController@informes_arreglos_resumen');
  
+//INFORMES CTA JUDICIAL
 Route::get('informes-cuentajudicial',   'InformesController@informes_cuenta_judicial');
 Route::get('informes-cuentajudicial/{html}',   'InformesController@informes_cuenta_judicial');
 Route::post('informes-cuentajudicial',   'InformesController@informes_cuenta_judicial');
 Route::post('informes-cuentajudicial/{html}',   'InformesController@informes_cuenta_judicial');
  
+//iNFORMES BANCOS
 Route::get('bank-informes',   'BancoController@informes'); 
 Route::post('bank-informes',   'BancoController@informes'); 
 Route::get('bank-informes/{tipo}',   'BancoController@informes'); 

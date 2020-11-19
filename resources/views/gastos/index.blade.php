@@ -13,7 +13,7 @@ use App\Mobile_Detect;
 $dete= new Mobile_Detect();
 $iconsize=  $dete->isMobile() ? "": "fa-lg";
 
-echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm btn-success mb-1" ,  "data-toggle"=>"modal", "data-target"=>"#showform", "onclick"=> "mostrar_form(event)", "style"=>"background-color: #fdc673;color: #1a0c00;"], $secure = null);
+echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm btn-primary mb-1" ,  "data-toggle"=>"modal", "data-target"=>"#showform", "onclick"=> "mostrar_form(event)"], $secure = null);
  
 @endphp
  
@@ -59,7 +59,7 @@ echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm b
  <input class="form-control form-control-sm"  type="date" id="Hasta" name="Hasta">
   </div>
   <div class="col-6 col-sm-2 col-md-3 col-lg-1 d-flex">
- <button style="background-color: #fdc673;color: #1a0c00;" type="submit" class="btn btn-sm btn-info mt-1">BUSCAR</button>
+ <button   type="submit" class="btn btn-sm btn-primary mt-1">BUSCAR</button>
   </div>
 </div>
 </form>

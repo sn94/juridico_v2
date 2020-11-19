@@ -17,6 +17,10 @@
     text-transform: uppercase;
     font-size: 10pt;
   }
+  input::placeholder{
+    color: #2e2e2e !important;
+    font-weight: 600;
+  }
 </style>
 
 <?php
@@ -30,6 +34,8 @@ if ($detect->isMobile() == false):?>
   <p class="name-titular">{{ isset($ci) ? $ci." - ". $nombre  : ""}}</p>  
 <?php endif; ?>
  
+
+
 
 @if( $OPERACION=="M" || $OPERACION=="V")
     <a  class="btn btn-info btn-sm" href="<?=url("liquida/".$ficha->IDNRO)?>">LIQUIDACIÓN</a>

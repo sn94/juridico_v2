@@ -16,7 +16,7 @@ if( $detect->isMobile() == false){
 ?>
 
 
-<table class="table table-striped table-bordered table-responsive">
+<table class="table table-striped table-bordered table-dark ">
       <thead class="thead-dark ">
       <th class="pb-0"></th>
       <th class="pb-0"></th>
@@ -29,8 +29,8 @@ if( $detect->isMobile() == false){
       <tbody>
         <?php  foreach( $lista as $it) :?>
         <tr> 
-          <td><a onclick="editar(event)" href="<?=url("editaux/".$TABLA."/".$it->IDNRO)?>"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
-          <td><a onclick="borrar(event)" href="<?=url("delaux/".$TABLA."/".$it->IDNRO)?>" ><i class="fa fa-trash" aria-hidden="true"></i></a></td>
+          <td><a class="text-light" onclick="editar(event)" href="<?=url("editaux/".$TABLA."/".$it->IDNRO)?>"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+          <td><a class="text-light" onclick="borrar(event)" href="<?=url("delaux/".$TABLA."/".$it->IDNRO)?>" ><i class="fa fa-trash" aria-hidden="true"></i></a></td>
           
           <?php if($TABLA=='odemanda'):?>
             <td> {{  $it->NOMBRES }}   </td> 

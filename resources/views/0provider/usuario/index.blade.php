@@ -4,7 +4,7 @@
 @section('content')
 
 
-<a  onclick="mostrarForm(event)" class="btn btn-primary btn-sm mt-1" href="<?=url("p/nuevo-provider")?>">Nuevo Usuario</a>
+<a  onclick="mostrarForm(event)" class="btn btn-primary btn-sm mt-1" href="<?=url("p/nuevo-provider")?>">Nuevo Admin</a>
 
 
 <div id="formstatus">
@@ -28,7 +28,7 @@
 <div id="modal-eliminar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm">
     <div class="modal-content p-2 bg-dark text-light">
-     <span style="font-weight: 600;"> Seguro que quiere eliminar este usuario?</span> 
+     <span style="font-weight: 600;"> Seguro que quiere eliminar este administrador?</span> 
      
 
       <div class="modal-footer">

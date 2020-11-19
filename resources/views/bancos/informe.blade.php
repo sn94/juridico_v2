@@ -28,7 +28,7 @@
  <input class="form-control form-control-sm"  type="date" id="Hasta" name="Hasta" >
   </div>
   <div class="col-12 col-sm-2 col-md-2 col-lg-1 d-flex">
- <button style="background-color: #a3c5fc;color: #1a0c00;" type="submit" class="btn btn-sm btn-info mt-1">BUSCAR</button>
+ <button   type="submit" class="btn btn-sm btn-primary mt-1">BUSCAR</button>
   </div>
 </div>
 </form>

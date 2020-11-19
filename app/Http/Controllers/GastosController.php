@@ -43,8 +43,7 @@ class GastosController extends Controller
     else
         return view("gastos.index",
         ["movi"=>  $dato, "TITULO"=>"GASTOS", "url_agregar"=> url("gasto"), 
-        "CODGASTO"=> DB::table("cod_gasto")->pluck( 'DESCRIPCION', 'IDNRO'),
-            "breadcrumbcolor"=>"#fdc673 !important;"] );
+        "CODGASTO"=> DB::table("cod_gasto")->pluck( 'DESCRIPCION', 'IDNRO')] );
        
     }
 

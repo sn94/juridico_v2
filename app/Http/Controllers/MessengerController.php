@@ -45,7 +45,7 @@ public function index($tipo="R"){
         return view('messenger.index',  
         ["lista"=> $ls , "url_listado"=>$url_listado,"tipo"=>$tipo ] );
    }catch(Exception $ex){
-    echo $ex;
+   
    }
 } 
 
@@ -125,20 +125,20 @@ public static function mensajesRecibidosSinLeer(){
 try{
     $datos= Messenger::where("DESTINATARIO",  session("id") )->where("LEIDO", "N")->get();
    return  ! is_null(  $datos );
-}catch( Exception $ex) {echo $ex;}
+}catch( Exception $ex) { }
 }
 
 //Hay mensajes enviados
  public static function mensajesEnviados(){
   try{  return  ! is_null(Messenger::where("REMITENTE",  session("id") )->get() );}
-  catch( Exception $ex) {echo $ex;}
+  catch( Exception $ex) { }
  }
  
 
 /***NUMERO de Mensajes sin leer */
  public static function numeroMensajesSinLeer(){
    try{ return  Messenger::where("DESTINATARIO",  session("id") )->where("LEIDO", "N")->count() ;}
-   catch( Exception $ex) {echo $ex;}
+   catch( Exception $ex) { return 0; }
  }
 
  /**NUMERO DE ENVIADOS */
@@ -149,7 +149,7 @@ try{
  /**OBTENER LOS 3 PRIMEROS MENSAJES SIN LEER */
 public static function getMensajesRecibidosSinLeer(){
    try{ return  Messenger::where("DESTINATARIO",  session("id") )->where("LEIDO", "N")->take(3)->get() ;}
-   catch(Exception $ex) { echo $ex; }
+   catch(Exception $ex) {   }
  }
 
 
@@ -157,7 +157,7 @@ public static function getMensajesRecibidosSinLeer(){
  
  public static function getMensajesEnviados(){
     try{ return  Messenger::where("REMITENTE",  session("id") )->take(3)->get() ;}
-    catch(Exception $ex) { echo $ex; }
+    catch(Exception $ex) {   }
   }
  
 

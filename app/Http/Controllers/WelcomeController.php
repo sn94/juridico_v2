@@ -51,6 +51,9 @@ class WelcomeController extends Controller
 
 
     public function index( Request $request){
+
+        if( ! $request->session()->has("abogado")) return view("welcome_sin_contexto");
+        
     $this->obtenerConexion();   
         
         if ( session('tipo') == "S"  || session("tipo")== "SA"  ){

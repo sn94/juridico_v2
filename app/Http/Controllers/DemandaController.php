@@ -37,22 +37,14 @@ class DemandaController extends Controller
 
         $dts= DB::table("demandas2")
         ->join("demandado", "demandado.CI", "=", "demandas2.CI")
-        ->select("demandado.CI", "demandado.TITULAR", "demandas2.*")
-        ->where("ABOGADO",  session("ABOGADO") )
+        ->select("demandado.CI", "demandado.TITULAR", "demandas2.*" )
+        ->where("ABOGADO", "=",  session("abogado") )
         ->get();
        // $dts = DB::select("select IDNRO,TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas2  order by TITULAR");
         return view('demandas.list', ['lista' => $dts, "odemanda" => $o_de]); 
     }
 
-/**
- * LiSTA DE DEMANDAS POR ORIGEN
- */
-    public function demandas_by_origen(  $origen){ 
  
-       /* $dts = DB::select("select IDNRO,TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas where O_DEMANDA='$origen' order by TITULAR");
-        return view('demandas2.list_tabla_demanda', ['lista' => $dts ]); */
-    }
-
 
 /**
  * LISTA DE DEMANDAS DE UNA PERSONA
@@ -82,10 +74,10 @@ class DemandaController extends Controller
     ->join("odemanda", "odemanda.IDNRO", "=", "demandas2.O_DEMANDA", "left")
     ->select("demandas2.IDNRO","demandas2.COD_EMP", "demandan.DESCR as DEMANDANTE", "odemanda.NOMBRES AS O_DEMANDA", "notificaciones.PRESENTADO", "notificaciones.SD_FINIQUI", "notificaciones.FEC_FINIQU")
     ->where("demandas2.CI", $CI)
+    ->where("demandas2.ABOGADO", session("abogado"))
     ->orderBy("demandas2.IDNRO")
     ->get();  return  $lista;
  }
-
 
 
  public function demandas_by_ci($ci){
@@ -94,8 +86,12 @@ class DemandaController extends Controller
        $persona= Demandados::where("ci", $ci)->first();//persona
        $saldos= $this->adjuntarSaldosDemanda($ci);
         return view("demandado.list_demandas", 
-        ['lista'=>   $lista,   'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
+        ['lista'=>   $lista, 'idnro'=>$persona->IDNRO,  'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
  }
+
+
+
+ 
 
 
  public function demandas_by_id($ID){
@@ -167,15 +163,15 @@ class DemandaController extends Controller
     }
 
 
-    public function nueva_demandan(Request $request, $ci=0){//idd id_demandado
+    public function nueva_demandan(Request $request, $DEMANDADO=0){//idd id_demandado
          
         
-        if( ! strcasecmp(  $request->method() , "post"))  {
+        if(  $request->isMethod("POST"))  {
             
             //Quitar el campo _token
             $Params=  $request->input();  
-            $Params['SALDO']=  $Params['DEMANDA'];
-            $Params['ABOGADO']=  session("abogado");
+            $Params['SALDO']=  $Params['DEMANDA'];//Saldo inicial
+            $Params['ABOGADO']=  session("abogado");//id de abogado
             
             /***ini transac */ 
              DB::beginTransaction();
@@ -183,6 +179,7 @@ class DemandaController extends Controller
                 $deman=new Demanda();
                 $deman->fill(  $Params );
                 $deman->save();
+                //Generacion de otros registros
                $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->ABOGADO=  session("abogado"); $noti->save();
                $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->ABOGADO=  session("abogado"); $obs->save();
                $contra= new Contraparte(); $contra->IDNRO= $deman->IDNRO;  $contra->ABOGADO_=  session("abogado"); $contra->save();
@@ -198,11 +195,12 @@ class DemandaController extends Controller
             
         }
         else{    
-            if( $ci != 0){
-                $ficha= Demandados::where("CI", $ci)->first();
+            if( $DEMANDADO != 0){
+                $ficha= Demandados::find( $DEMANDADO);
                 return view('demandas.index',  
+
                 array_merge( $this->formar_parametros() ,
-                 [ 'ci'=>$ci, 'nombre'=>$ficha->TITULAR, 'ficha0'=> $ficha, 'OPERACION'=>"A+"])     ); 
+                 [  'ci'=>$ficha->CI, 'nombre'=>$ficha->TITULAR, 'ficha0'=> $ficha, 'OPERACION'=>"A+"])     ); 
             }else{
                 $pars= array_merge( $this->formar_parametros() , array( 'OPERACION'=>"A"  ) );
                 return view('demandas.index', $pars);  
@@ -219,34 +217,14 @@ class DemandaController extends Controller
            //instancia de demanda
            $obdema= NULL;
            if($iddeman==0) {$iddeman= $request->input("IDNRO"); }
+
            $obdema= Demanda::find( $iddeman );
-           $obnoti= Notificacion::find( $iddeman);
-           $obobs= Observacion::find( $iddeman);
-           $obDataPerso= Demandados::where("CI", $obdema->CI)->first();
-           //Contraparte-intervencion
-           $obcontraparte= Contraparte::find( $iddeman);
-           if( is_null( $obcontraparte) ){//Crear una instancia de intervencion-contraparte si no existe
-               $obcontraparte= new Contraparte();
-               $obcontraparte->IDNRO= $iddeman;
-               $obcontraparte->save();
-           }
-           //Existe Arreglo Extrajudicial?
-           $obarre=Arreglo_extrajudicial::find( $iddeman );
-           if( is_null( $obarre)  ){//Crear una inst. de arreglo ext.judicial si no existe
-               $obarre= new Arreglo_extrajudicial();
-               $obarre->IDNRO= $iddeman;
-               $obarre->save();
-           }
+           
         //Honorarios
         //Existe Honorarios
         $obhonorario=Honorarios::find( $iddeman );
-        if( is_null( $obhonorario)  ){//Crear una inst. de arreglo ext.judicial si no existe
-            $obhonorario= new Honorarios();
-            $obhonorario->IDNRO= $iddeman;
-            $obhonorario->save();
-        }
  
-        if( ! strcasecmp(  $request->method() , "post"))  {
+        if(  $request->isMethod("POST"))  {
             
             //Quitar el campo _token
             $Params=  $request->input();  
@@ -270,7 +248,14 @@ class DemandaController extends Controller
         }
 
             $ci= $obdema->CI;//cedula  
-            $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
+            $nom= Demandados::find($obdema->DEMANDADO)->TITULAR;//nombre 
+            $obnoti= Notificacion::find( $iddeman);
+           $obobs= Observacion::find( $iddeman);
+           $obDataPerso= Demandados::find($obdema->IDNRO);
+           //Contraparte-intervencion
+           $obcontraparte= Contraparte::find( $iddeman);
+           //Existe Arreglo Extrajudicial?
+           $obarre=Arreglo_extrajudicial::find( $iddeman );
             //Devolver 
             $pars= array_merge( $this->formar_parametros() ,
              array( 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema,

@@ -45,7 +45,7 @@ if( $detect->isMobile() == false){
        </thead>
       <tbody>
         <?php  foreach( $lista as $it) :?>
-        <tr id="{{$it->NRO}}"> 
+        <tr id="{{$it->NRO}}"   style="background-color: rgba(0, 150, 166, 0.12);"> 
           <td><a   href="<?=url("efiltro/M/".$it->NRO)?>" style="color:black;"><i class="mr-2 ml-2 fa fa-pencil {{$icons_size}}" aria-hidden="true"></i></a></td>
           
           @if( session("tipo")=="S" )

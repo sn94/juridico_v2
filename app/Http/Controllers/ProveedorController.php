@@ -166,7 +166,7 @@ public function sign_in( Request $request){
             $usr= $request->input("NICK");
             //OBTENER NRO REG DE USUARIO a partir de su NICK
             $d_u= Usu_proveedor::where("NICK", $usr)->first();
-            var_dump( $d_u);
+            
             //VERIFICAR EXISTENCIA DE USUARIO
             if( is_null( $d_u) ){//no existe
                 return view("0provider.login", array("errorSesion"=> "El usuario ->$usr<- no existe") );

@@ -25,7 +25,7 @@ class BancoController extends Controller
        // if ( $request->ajax() )
       
        $dato= Bancos::get();
-       return view("bancos.index", ["movi"=>  $dato, "breadcrumbcolor"=>"#a3c5fc;"] );
+       return view("bancos.index", ["movi"=>  $dato] );
        
     }
 
@@ -51,7 +51,7 @@ class BancoController extends Controller
         if( request()->ajax())
         {
             if( $tipo=="html")
-            return view("bancos.grilla_plain", ["movi"=>  $banco_obj, "breadcrumbcolor"=>"#a3c5fc;"] );
+            return view("bancos.grilla_plain", ["movi"=>  $banco_obj] );
             if( $tipo=="json")
             echo json_encode(  $banco_obj );
             if( $tipo=="pdf")
@@ -59,7 +59,7 @@ class BancoController extends Controller
         }
         else{
             if($tipo== "html")
-            return view("bancos.informe", ["movi"=>  $banco_obj, "breadcrumbcolor"=>"#a3c5fc;"] );
+            return view("bancos.informe", ["movi"=>  $banco_obj] );
             if($tipo== "pdf")
             $this->reporte_movimientos("MOVIMIENTOS DE CUENTAS BANCARIAS", $lista_cruda);
         }
@@ -215,7 +215,7 @@ class BancoController extends Controller
         $MOVS = $dato->banc_mov;
         return view("bancos.movimientos",
          [ 'IDNRO'=>$IDNRO,'TITULAR'=>$Titular,'BANCO'=>$Bco,'CUENTA'=>$Cta,'LINK'=>url("lmovibank")."/$id",
-         "dato"=> $MOVS,  "breadcrumbcolor"=>"#a3c5fc;" ]);        
+         "dato"=> $MOVS ]);        
     }
 
 

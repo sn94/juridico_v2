@@ -19,7 +19,7 @@
 
 @if( isset($sin_abogados) )
 
-<p class="text-light" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Sin registros de abogados. Debe crear al menos un registro para utilizar las funciones del sistema</p>
+<p  style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Sin registros de abogados. Debe crear al menos un registro para utilizar las funciones del sistema</p>
 
 @endif
 

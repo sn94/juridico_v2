@@ -115,7 +115,7 @@ $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro/M");
             </div>
           </div> 
           <div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex align-items-center">
-          <button type="submit" class="btn btn-sm btn-info">GUARDAR</button> 
+          <button type="submit" class="btn btn-sm btn-primary">GUARDAR</button> 
           </div>
           <div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex align-items-center">
               <div class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="1000">

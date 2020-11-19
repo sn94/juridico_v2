@@ -16,7 +16,7 @@
 
 <div class="row">
   <div class="col-2 col-sm-2 col-md-2 col-lg-1">
-  <a class="btn btn-sm btn-info" href="<?= url("nfiltro") ?>">NUEVO</a>
+  <a class="btn btn-sm btn-primary" href="<?= url("nfiltro") ?>">NUEVO</a>
   </div> 
 </div>
 

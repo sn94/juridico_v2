@@ -154,7 +154,7 @@ endif;
             </div>
             <div class="app-content">
                 <nav class="navbar navbar-expand navbar-light bg-white"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
-                    <div class="navbar-brand">CONTROL DE CLIENTES ( MÓDULO DE USO INTERNO) </div>
+                    <div class="navbar-brand">CONTROL ADMIN ( MÓDULO DE USO INTERNO) </div>
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="badge badge-pill"> 0

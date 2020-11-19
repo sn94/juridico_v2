@@ -114,7 +114,7 @@ async    function enviar(ev){
             $("#modal-form").modal("hide");
             if( "act_grilla" in window )  act_grilla();
 
-        }  else   $("#formstatus").html(  respuesta1.error );
+        }  else{   $("#formstatus").html( "" ); alert( respuesta1.error); }
     }
 
 

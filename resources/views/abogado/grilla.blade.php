@@ -24,6 +24,7 @@ if( !isset( $abogados) ) return;
       <thead class="thead-dark ">
       <th class="pb-0"></th>
       <th class="pb-0"></th>
+      <th  class="pb-0"> CÓDIGO</th>
         <th class="pb-0">CÉDULA</th>
         <th class="pb-0">NOMBRES</th> 
         <th  class="pb-0">DOMICILIO</th>
@@ -39,7 +40,8 @@ if( !isset( $abogados) ) return;
         <tr style="background-color: rgba(0, 150, 166, 0.12);"> 
           <td class="text-center"><a class="text-light"  onclick="borrarAbogado(event)"  href="<?=url("abogados/delete/".$it->IDNRO)?>"><i class="fa fa-trash" aria-hidden="true"></i></a></td>
           <td class="text-center"><a  class="text-light" onclick="editarAbogado(event)" href="<?=url("abogados/edit/".$it->IDNRO)?>" ><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
-          <td>{{ Helper::number_f( $it->CEDULA ) }}</td> 
+          <td class="text-center"> {{  $it->IDNRO  }}</td>
+          <td class="text-center">{{ Helper::number_f( $it->CEDULA ) }}</td> 
           <td>{{$it->NOMBRE." ".$it->APELLIDO}}</td>
            <td>{{  $it->DOMICILIO  }}</td>  
            <td>{{  $it->TELEFONO  }}</td>  

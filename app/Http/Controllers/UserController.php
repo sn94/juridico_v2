@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Abogados;
 use App\Demanda;
 use App\Http\Controllers\Controller;
 use App\Mail\AuthAlert;
@@ -41,14 +42,30 @@ public function index(){
        return "error al recuperar formulario";
     }
        
+
+    $lst_od= session("tipo")=="SA" ? User::select("usuarios.*", 
+
+    DB::raw("if( usuarios.tipo ='O', CONCAT('OPERADOR - Asist. de Abogado N° ', usuarios.ABOGADO) ,
+    if(usuarios.tipo='U', CONCAT('USUARIO - Asist. de Abogado N° ',usuarios.ABOGADO), 
+    IF(usuarios.tipo='S', 'SUPERVISOR ABOGADO' , 'SUPER ADMIN' )         ) ) as tipo"),
+    DB::raw("if(usuarios.ABOGADO is null, '', 'ABOGADO') as FUNCION"))->get()
+    : 
+    User::select("usuarios.*", 
+    DB::raw("if( usuarios.tipo ='O', 'OPERADOR' , IF(  usuarios.tipo ='U', 'USUARIO', 'SUPERVISOR (Tú)') ) as tipo"),
+    DB::raw("if(usuarios.ABOGADO is null, '', 'ABOGADO') as FUNCION"))
+    ->where("usuarios.ABOGADO", session("abogado"))-> get()
+    ; 
+
+
         //Lista odemandas
         if( request()->ajax())
-        {
-            $ls= User::get();
-            return view('auth.grilla' , ["users"=>  $ls]);
+        { 
+            return view('auth.grilla' , ["users"=>  $lst_od]);
         }else{
-            $lst_od= User::get();  
-            return view('auth.index',  ['users'=> $lst_od  , "OPERACION"=>"A"] );
+        //registros de abogados
+        $abogados_l= Abogados::select("abogados.IDNRO", DB::raw( "concat(  abogados.NOMBRE, concat(' ', abogados.APELLIDO) ) as NOMBRES") )->get();
+
+        return view('auth.index',  ['users'=> $lst_od  ,  'abogados'=> $abogados_l,  "OPERACION"=>"A"] );
         } 
 } 
 
@@ -68,7 +85,14 @@ private function enviar_email_credencial( $email, $nick, $pass, $titulo= "BIENVE
 
     
 public function agregar( Request $request){
-    if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
+
+    try{
+        $this->obtenerConexion();
+    }catch( Exception $er){
+       return "error al recuperar formulario";
+    }
+
+    if( $request->isMethod("POST"))  {//hay datos 
         //Quitar el campo _token
         $Params=  $request->input(); 
         //Devuelve todo elemento de Params que no este presente en el segundo argumento
@@ -96,10 +120,11 @@ public function agregar( Request $request){
         }   
     }
     else  {   
-        
-        //Lista odemandas
-        $lst_od= User::get();
-        return view('auth.form' );
+         
+         //registros de abogados
+         $abogados_l= Abogados::select("abogados.IDNRO", DB::raw( "concat(  abogados.NOMBRE, concat(' ', abogados.APELLIDO) ) as NOMBRES") )->get();
+
+        return view('auth.form' , ['abogados'=>  $abogados_l]);
        }/** */    
 }
    
@@ -109,6 +134,14 @@ public function agregar( Request $request){
 
 
 public function editar( Request $request, $id=0){
+
+    try{
+        $this->obtenerConexion();
+    }catch( Exception $er){
+       return "error al recuperar formulario";
+    }
+
+
     if(  $request->isMethod("POST"))  {//hay datos 
         //Quitar el campo _token
         $Params=  $request->input();  
@@ -122,8 +155,7 @@ public function editar( Request $request, $id=0){
         
         
         try{
-            
-            $this->obtenerConexion();
+             
             DB::beginTransaction();
              $r= User::find( $request->input("IDNRO") ); 
              $r->fill(  $Params  );  
@@ -140,10 +172,12 @@ public function editar( Request $request, $id=0){
         }   
     }
     else  {   
-        try{
-            $this->obtenerConexion();
+        try{ 
             $dato= User::find( $id );
-            return view('auth.form' , ["DATO"=> $dato , "OPERACION"=>"M"]  );
+             //registros de abogados
+         $abogados_l= Abogados::select("abogados.IDNRO", DB::raw( "concat(  abogados.NOMBRE, concat(' ', abogados.APELLIDO) ) as NOMBRES") )->get();
+
+            return view('auth.form' , ["DATO"=> $dato , 'abogados'=> $abogados_l, "OPERACION"=>"M"]  );
         }catch( Exception $er){
             echo "error al recuperar formulario";
         }
@@ -261,7 +295,11 @@ public function sign_in( Request $request){
 
                 // VERIFICACION DE contrasenha correcta
                 if( $this->correctPassword( $pass, $usr) ){
+
+
                     $SesionDatos = array( 	'id' => $id_usr, 'nick'  => $usr, 'tipo' => $tipo, 'system'=> $systemid);
+                    if(  $tipo == "S") $SesionDatos['abogado']= $d_u->ABOGADO; 
+
                     // Via a request instance... 
                     session( $SesionDatos); 
 

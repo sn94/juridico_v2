@@ -8,7 +8,7 @@
 @section('content')
 
  
-<a style="background-color: #a3c5fc;color:#01001c;" onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"  href="<?=url("nbank")?>"  class="btn btn-sm btn-success">NUEVA CTA.</a>
+<a  onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"  href="<?=url("nbank")?>"  class="btn btn-sm btn-primary">NUEVA CTA.</a>
 <div id="viewstatus"></div>
 <div id="grilla">
 @include("bancos.grilla")

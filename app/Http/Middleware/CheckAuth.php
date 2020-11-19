@@ -58,6 +58,9 @@ class CheckAuth
 
     public function handle($request, Closure $next)
     {
+
+     
+
          if ($request->session()->has('nick')) {
            if(  $request->session()->has('provider')  ){
               $this->obtenerConexion(  true ); return $next($request);//dejar pasar
@@ -67,10 +70,18 @@ class CheckAuth
               $this->obtenerConexion(); return $next($request);//dejar pasar
             }else{
               //control codigo abogado
-              if( (preg_match("/abogados/",  $request->path() )  > 0)  ||  (preg_match("/user/",  $request->path() )  > 0)) 
-              return $next($request);//dejar pasar
+              if(  $request->path()=="/" || (preg_match("/abogados/",  $request->path() )  > 0)  ||  (preg_match("/user/",  $request->path() )  > 0)  || (preg_match("/signout/",  $request->path() )  > 0)  ||   (preg_match("/denegado/",  $request->path() )  > 0) ) 
+              {
+                
+                return $next($request);//dejar pasar 
+
+              }
               else
-              return redirect('abogados'); 
+              {
+                if( session("tipo")=="SA")
+                return redirect('abogados');
+                else redirect("/");
+               }
             }
 
            // return $next($request);//dejar pasar

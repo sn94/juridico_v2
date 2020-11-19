@@ -22,7 +22,7 @@ if ($detect->isMobile() == false):?>
 
  <!--Enlaces  --->
  
-<a class="btn btn-info btn-sm mb-1 mt-1" href="<?=url("demandas-agregar/$ci")?>">NUEVO JUICIO</a> 
+<a class="btn btn-primary btn-sm mb-1 mt-1" href="<?=url("demandas-agregar/$ci")?>">NUEVO JUICIO</a> 
 
 <?php
 
@@ -34,8 +34,8 @@ use App\Helpers\Helper;
       <thead class="thead-dark pb-0 pt-0">
           <tr> 
             <th></th> 
-            @if(session("tipo")=="S" || session("tipo")=="O") <th></th> @endif
-            @if(session("tipo")=="S")  <th></th>  @endif
+            @if(  (session("tipo")=="S" || session("tipo")=="SA") || session("tipo")=="O") <th></th> @endif
+            @if(   (session("tipo")=="S" || session("tipo")=="SA")  )  <th></th>  @endif
            
           <th class="pb-0 pt-0">DEMANDANTE</th>  
           <th class="pb-0 pt-0">COD_EMP</th> 
@@ -54,10 +54,10 @@ use App\Helpers\Helper;
 
             <td><a href="<?= url("ficha-demanda/".$item->IDNRO)?>"><i  style="color:black;" class="fa fa-eye" aria-hidden="true"></i></a> </td> 
             
-            @if(session("tipo")=="S" || session("tipo")=="O")
+            @if(   (session("tipo")=="S" || session("tipo")=="SA")  || session("tipo")=="O")
             <td><a href="<?= url("demandas-editar/".$item->IDNRO)?>"><i   style="color:black;" class="fa fa-pencil" aria-hidden="true"></i></a> </td>
             @endif 
-            @if(session("tipo")=="S")
+            @if(session("tipo")=="S" || session("tipo")=="SA") 
             <td >  <a onclick="procesar_borrar(event)" href="<?= url("demandas-borrar/".$item->IDNRO)?>"><i  style="color:black;" class="fa fa-trash" aria-hidden="true"></i></a> </td> 
            @endif
 

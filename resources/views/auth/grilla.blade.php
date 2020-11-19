@@ -17,23 +17,27 @@ if( $detect->isMobile() == false){
 ?>
 
 
-<table class="table table-striped   text-light">
+<table class="table table-striped  table-dark text-light">
+
       <thead class="thead-dark ">
-      <th class="pb-0"></th>
-      <th class="pb-0"></th>
-        <th class="pb-0">NICK</th>
-        <th class="pb-0">TIPO</th> 
-        <th  class="pb-0">CREACIÓN</th>
-        <th  class="pb-0">ACTUALIZADO</th>
+      <th class="pb-0 text-center"></th>
+      <th class="pb-0 text-center"></th>
+        <th class="pb-0 text-center">NICK</th>
+        <th class="pb-0 text-center">TIPO</th> 
+        <th  class="pb-0 text-center">CREACIÓN</th>
+        <th  class="pb-0 text-center">ACTUALIZADO</th>
+
       <tbody>
         <?php  foreach( $users as $it) :?>
         <tr  style="background-color: rgba(0, 150, 166, 0.12);"> 
           <td class="text-center"><a  class="text-light" onclick="borrar_user(event)"  href="<?=url("del-user/".$it->IDNRO)?>"><i class="fa fa-trash" aria-hidden="true"></i></a></td>
           <td class="text-center"><a  class="text-light" onclick="editar_user(event)" href="<?=url("edit-user/".$it->IDNRO)?>" ><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
-          <td>{{$it->nick}}</td>
-           <td>{{  $it->tipo=="S" ? "SUPERVISOR":  ($it->tipo=="O" ?"OPERADOR": "USUARIO" )  }}</td>  
-           <td>{{ Helper::beautyDate( $it->created_at)}}</td>  
-           <td>{{  Helper::beautyDate($it->updated_at) }}</td>  
+          <td class="text-center">{{$it->nick}}</td>
+           <td class="text-center">
+             {{  $it->tipo }}
+            </td>  
+           <td class="text-center">{{ Helper::beautyDate( $it->created_at)}}</td>  
+           <td class="text-center">{{  Helper::beautyDate($it->updated_at) }}</td>  
           </tr>
         <?php endforeach; ?>
       </tbody>

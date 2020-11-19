@@ -199,10 +199,21 @@ endif;
             <div class="app-content">
                 <nav class="navbar navbar-expand navbar-light" style="background-color: #060a2d;"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
                     <div id="abogado-view-info" class="navbar-brand text-light"> 
+
+                        @php 
+                        use \App\Abogados;
+                        @endphp 
+
                         @if( session()->has("abogado") )
                         ABOGADO: {{session("abogado")}}
+                        @php 
+                        $abogado_d= Abogados::find(session("abogado") );
+                        if( !is_null($abogado_d) ){
+                            echo $abogado_d->NOMBRE." ".$abogado_d->APELLIDO;
+                        }
+                        @endphp
                         @else
-                        <a style="color: yellow;font-size: 14px;" href="#" onclick="$('#modal-abogado').modal('show')">«Ingresar código de abogado»</a>
+                        <a style="color: yellow;font-size: 14px;" href="#" onclick="$('#modal-abogado').modal('show')">«Ingresar credenciales de abogado»</a>
                         <div id="abogado-view-error"></div>
                         @endif 
 

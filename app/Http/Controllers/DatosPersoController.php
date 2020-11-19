@@ -39,11 +39,13 @@ class DatosPersoController extends Controller
           $consulta= "";
           if(  $argumento != ""){
             $consulta= DB::table("demandado") 
-            ->selectRaw(" demandado.IDNRO,demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.CI= demandado.CI) as nro")
+            ->selectRaw(" demandado.IDNRO,demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.DEMANDADO= demandado.IDNRO) as nro")
+            ->where("demandado.ABOGADO", session("abogado"))
             ->whereRaw(" demandado.CI LIKE '%$argumento%' or  TITULAR LIKE '%$argumento%'  ")  ;
           }else{
             $consulta= DB::table("demandado") 
-            ->selectRaw( "demandado.IDNRO, demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.CI= demandado.CI) as nro");
+            ->where("demandado.ABOGADO", session("abogado"))
+            ->selectRaw( "demandado.IDNRO, demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.DEMANDADO= demandado.IDNRO) as nro");
           }
 
             $dmds=  $consulta->paginate(20);
@@ -73,10 +75,12 @@ class DatosPersoController extends Controller
         if(  $argumento != ""){
           $consulta= DB::table("demandado") 
           ->selectRaw(" demandado.IDNRO,demandado.CI_GARANTE,demandado.GARANTE,demandado.DOM_GARANT, demandado.TEL_GARANT")
+          ->where("demandado.ABOGADO",  session("abogado") )
           ->whereRaw(" (demandado.CI_GARANTE LIKE '%$argumento%' or  demandado.GARANTE LIKE '%$argumento%')  ") 
           ->whereRaw("( (demandado.CI_GARANTE is NOT null AND demandado.CI_GARANTE <> '')   or  (demandado.GARANTE is NOT null  AND demandado.GARANTE <> '') ) ")  ;
         }else{
           $consulta= DB::table("demandado") 
+          ->where("demandado.ABOGADO",  session("abogado") )
           ->selectRaw( "demandado.IDNRO, demandado.CI_GARANTE,demandado.GARANTE,demandado.DOM_GARANT, demandado.TEL_GARANT")
           ->whereRaw(" ((demandado.CI_GARANTE is NOT null AND demandado.CI_GARANTE <> '')   or  (demandado.GARANTE is NOT null  AND demandado.GARANTE <> '') ) ") ;
         }
@@ -92,9 +96,7 @@ class DatosPersoController extends Controller
 
 
  
-/**
- * FICHA DE DATOS PERSONALES
- */
+/**  FICHA DE DATOS PERSONALES  **/
     public function view(  $ci){
         $data= DB::table("demandado")->where('CI', $ci)->first();
         return view("demandado.view", ['ficha'=>   $data] );
@@ -102,10 +104,10 @@ class DatosPersoController extends Controller
 
   /**VERIFICAR SI EXISTE UN CI */
   public function existe(  $ci){
-    $data= DB::table("demandado")->where('CI', $ci)->first();
-    $ex= is_null($data) ? "n": "s";
-    echo json_encode( array("existe"=>  $ex) );
-}
+      $data= DB::table("demandado")->where('CI', $ci)->first();
+      $ex= is_null($data) ? "n": "s";
+      echo json_encode( array("existe"=>  $ex) );
+  }
 
 
   /*
@@ -124,13 +126,16 @@ class DatosPersoController extends Controller
               $modelo= new Demandados();  $modelo->fill( $Params );  $modelo->save();
               //$ultimoIdGen=  $modelo->IDNRO; 
               /**generar registro en demanda, en notifi y en observacion */
-              $deman= new Demanda();   $deman->CI= $modelo->CI; $deman->ABOGADO=  session("abogado"); $deman->save();
-              $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->ABOGADO=  session("abogado"); $noti->save();
+              
+              $deman= new Demanda(); $deman->DEMANDADO= $modelo->IDNRO;  $deman->CI= $modelo->CI; $deman->ABOGADO=  session("abogado"); $deman->save();
+
+              $noti= new Notificacion();   $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->ABOGADO=  session("abogado"); $noti->save();
               $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->ABOGADO=  session("abogado"); $obs->save();
               $contra= new Contraparte(); $contra->IDNRO= $deman->IDNRO;  $contra->ABOGADO_=  session("abogado"); $contra->save();
               $obarre= new Arreglo_extrajudicial();  $obarre->IDNRO= $deman->IDNRO;  $obarre->ABOGADO= session("abogado"); $obarre->save();
                $obhonorario= new Honorarios(); $obhonorario->IDNRO= $deman->IDNRO; $obhonorario->ABOGADO=  session("abogado"); $obhonorario->save();
-              DB::commit();
+              
+               DB::commit();
               echo json_encode( 
                 array(  'IDNRO'=> $modelo->IDNRO,  'ci'=> $modelo->CI,     'nombre'=> $modelo->TITULAR,   "id_demanda"=> $deman->IDNRO)   );
             } catch (\Exception $e) {
@@ -147,13 +152,9 @@ class DatosPersoController extends Controller
   public function editar(Request $request, $idnro=0){//idnro es CEDULA
     
     //Demandados::find( $idnro );
-    if( ! strcasecmp(  $request->method() , "post"))  {
+    if( $request->isMethod("POST"))  {
         //Quitar el campo _token
-        $Params=  $request->input(); 
-        //Devuelve todo elemento de Params que no este presente en el segundo argumento
-       /* $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
-        if( $ar1 == $ar2) return 0;    else 1; 
-        } ); */
+        $Params=  $request->input();  
         //update to DB ELOQUENT VERSION 
         $idnro= $request->input("IDNRO");
         $modelo= Demandados::find( $idnro);
@@ -177,7 +178,7 @@ class DatosPersoController extends Controller
 
 public function borrar($ci){ //En realidad se recibiria el IDNRO
 
-  if(session("tipo")=="S"){
+  if(session("tipo")=="S" || session("tipo")=="SA"){
     $demandado= Demandados::find( $ci);
     $demanda= Demanda::where("CI", $demandado->CI)->first();
     if( is_null($demanda)){  //Se puede borrar
