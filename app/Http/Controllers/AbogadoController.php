@@ -29,7 +29,7 @@ class AbogadoController extends Controller
   
 
 
-    private function obtenerConexion( $keepDefaultSetting=  false ){
+   /* private function obtenerConexion( $keepDefaultSetting=  false ){
         if(  $keepDefaultSetting)  return;
         $systemid=  session("system");  
         $DataBaseName= "cli_".$systemid;
@@ -46,7 +46,7 @@ class AbogadoController extends Controller
         Config::set('database.connections.mysql', $configDb);
        //$conexionSQL = DB::connection('mysql');
        return $systemid;
-    }
+    }**/
 
 
 

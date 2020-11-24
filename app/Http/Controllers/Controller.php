@@ -14,7 +14,43 @@ class Controller extends BaseController
 
 
 
- 
+    public function defaultConexion( ){
+      
+        $configDb = array(
+            'driver' => 'mysql',
+            'host' => env("DB_HOST"),
+            'database' =>  env("DB_DATABASE"),
+            'username' =>  env("DB_USERNAME"),
+            'password' => env("DB_PASSWORD"),
+            'charset' => 'utf8',
+            'prefix' => '',
+        );
+     
+        Config::set('database.connections.principal', $configDb);
+       //$conexionSQL = DB::connection('mysql'); 
+    }
+    public function obtenerConexion( $USER="" ){
+       
+        $id_sys= ( explode("_",  $USER))[0];
+
+
+        $systemid=  (  $USER!= "" ) ?  $id_sys :   session("system");  
+        $DataBaseName= "cli_".$systemid;
+        $configDb = array(
+            'driver' => 'mysql',
+            'host' =>  env("DB_HOST"),
+            'database' =>  $DataBaseName,
+            'username' =>  env("DB_USERNAME"),
+            'password' => env("DB_PASSWORD"),
+            'charset' => 'utf8',
+            'prefix' => '',
+        );
+     
+        Config::set('database.connections.mysql', $configDb);
+       //$conexionSQL = DB::connection('mysql');
+       return $systemid;
+    }
+
 
 
 

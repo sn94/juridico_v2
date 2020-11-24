@@ -22,8 +22,7 @@ class BancoController extends Controller
     }
   
     public function index(){
-       // if ( $request->ajax() )
-      
+      $this->obtenerConexion();
        $dato= Bancos::get();
        return view("bancos.index", ["movi"=>  $dato] );
        
@@ -32,6 +31,7 @@ class BancoController extends Controller
 
 
     public function informes( $tipo="html"){ 
+        $this->obtenerConexion();
         $datos= request()->input();
 
         $banco_obj= DB::table("ctas_banco")->join("ctasban_mov", "ctasban_mov.IDBANCO", "=", "ctas_banco.IDNRO")
@@ -70,6 +70,7 @@ class BancoController extends Controller
 
 
     public function agregar(Request $request){
+        $this->obtenerConexion();
         if( sizeof(  $request->all() )  > 0){
             //Verificar si ya existe el numero de cuenta
             $posibleCoincidencia= Bancos::where("CUENTA",  $request->input("CUENTA")  )->first();
@@ -89,6 +90,7 @@ class BancoController extends Controller
     }
 
     public function editar(Request $request, $id=0){
+        $this->obtenerConexion();
         if( sizeof(  $request->all() )  > 0){
             $banco=Bancos::find( $request->input("IDNRO" ) );
             $banco->fill( $request->input() );
@@ -103,6 +105,7 @@ class BancoController extends Controller
 
 
     public function editar_movimiento(Request $request, $id=0){
+        $this->obtenerConexion();
         if( sizeof(  $request->all() )  > 0){
             $banco=Banc_mov::find( $request->input("IDNRO" ) );
             $banco->fill( $request->input() );
@@ -118,12 +121,14 @@ class BancoController extends Controller
     }
 
     public function borrar($idnro){
+        $this->obtenerConexion();
         $d=Bancos::find($idnro)->delete();
         echo json_encode( array("IDNRO"=> $idnro )  );
     }
 
 
     public function borrar_movimiento($idnro){
+        $this->obtenerConexion();
         $d=Banc_mov::find($idnro)->delete();
         echo json_encode( array("IDNRO"=> $idnro )  );
     }
@@ -132,11 +137,13 @@ class BancoController extends Controller
 
 
     public function listar(){
+        $this->obtenerConexion();
         $dato=Bancos::all();
         return view("bancos.grilla", ["movi"=> $dato]);   
     }
 
     public function listar_movimiento(){
+        $this->obtenerConexion();
          //Consultar depositos y extracciones
          $SQL="SELECT ctasban_mov.*,ctas_banco.CUENTA,ctas_banco.TITULAR FROM ctas_banco,ctasban_mov where ctas_banco.CUENTA=ctasban_mov.CUENTA AND ctas_banco.BANCO=ctasban_mov.BANCO";
          $MOVS = DB::select( $SQL) ;
@@ -144,6 +151,7 @@ class BancoController extends Controller
     }
 
     public function deposito(Request $request, $idnro=0){
+        $this->obtenerConexion();
         if( sizeof(  $request->all() )  > 0){
 
             DB::beginTransaction();
@@ -176,6 +184,7 @@ class BancoController extends Controller
 
 
     public function extraccion(Request $request, $idnro=0){
+        $this->obtenerConexion();
         if( sizeof(  $request->all() )  > 0){
 
             DB::beginTransaction();
@@ -205,6 +214,7 @@ class BancoController extends Controller
 
 
     public function ViewCtaBanco( $id ){
+        $this->obtenerConexion();
         $dato= Bancos::find( $id);
         $IDNRO= $dato->IDNRO;
         $Cta= $dato->CUENTA;
@@ -225,7 +235,7 @@ class BancoController extends Controller
 //para clases css referenciarlas mediante comillas dobles
  
 public function reporte( $idnro, $tipo="xls"){ 
-
+    $this->obtenerConexion();
     $Bank= Bancos::find(  $idnro);
     
     $Movi= $Bank->banc_mov; 
@@ -335,6 +345,7 @@ $b64Doc = chunk_split(base64_encode(file_get_contents($this->pdfdoc)));
 */
 
 public function  reporte_movimientos( $Titulo,  $dts){
+    $this->obtenerConexion();
     set_time_limit(0);
     ini_set('memory_limit', '-1');
      // Genera un PDF
@@ -428,6 +439,7 @@ public function  reporte_movimientos( $Titulo,  $dts){
 
 
 public function  reporte_movimientos_b64( $Titulo,  $dts){
+    $this->obtenerConexion();
     set_time_limit(0);
     ini_set('memory_limit', '-1');
      // Genera un PDF
@@ -528,7 +540,7 @@ public function  reporte_movimientos_b64( $Titulo,  $dts){
 
 
 public function  importar_registros(){
-
+    $this->obtenerConexion();
 
     //Obtener instancias de movimiento de cuenta
     //Actualizar el campo IDBANCO de los mismos

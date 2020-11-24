@@ -84,6 +84,23 @@ private function enviar_email_credencial( $email, $nick, $pass, $titulo= "BIENVE
 
 
     
+public function user_creation_is_alowed(  ){
+    //session
+    $id_suscrip= session("system");
+    $Conn=  DB::connection("principal");
+    $res= DB::table("suscriptores")
+    ->join("planes", "planes.IDNRO", "suscriptores.PLAN")->select("planes.MAX_USERS")->first();
+    if(  is_null($res) ){
+return response()->json(  ['error'=> "No existe un registro de Suscripcion al servicio"]);
+    }else{ 
+         
+        $this->obtenerConexion();
+        $numero_de_usuarios_actual= User::count();
+        if( $res->MAX_USERS <  $numero_de_usuarios_actual) 
+        return response()->json(  ['ok'=> "Permitido" ]);
+        else return response()->json(  ['error'=> "No permitido. Ya se llego al limite de número de usuarios" ]);
+    }
+}
 public function agregar( Request $request){
 
     try{
@@ -220,28 +237,13 @@ return $id;
  
 
 
-private function obtenerConexion(  $nick= ""  ){
-    $systemid= $nick=="" ?  session("system") :   $this->get_system_id( $nick);
-    $DataBaseName= "cli_".$systemid;
-    
-    $configDb = array(
-        'driver' => 'mysql',
-        'host' => 'localhost',
-        'database' =>  $DataBaseName,
-        'username' =>   env('DB_USERNAME'),
-        'password' =>  env('DB_PASSWORD'),
-        'charset' => 'utf8',
-        'prefix' => '',
-    );
-    Config::set('database.connections.mysql', $configDb);
-   //$conexionSQL = DB::connection('mysql');
-   return $systemid;
-}
+ 
 
 
 
 
 public function validar_existencia_usuario( $usr){
+ 
     $systemid= $this->obtenerConexion(  $usr);
 
     //OBTENER NRO REG DE USUARIO a partir de su NICK
@@ -250,7 +252,7 @@ public function validar_existencia_usuario( $usr){
         $d_u= User::where("nick", $usr)->first();
         return response()->json( ["ok"=>  "Registrado"]);
     }catch( Exception $ex) {
-        return response()->json( ["error"=>  "Usted no está registrado"]);
+        return response()->json( ["error"=>  "Usted no está registrado".$ex]);
     }
 }
 
@@ -268,6 +270,7 @@ public function sign_in( Request $request){
             //DATOS DE SESIOn
             $usr= $request->input("nick");
             //Identificar el sistema al cual pertenece /Extraer Id Crear conexion pertinente
+            
             $systemid= $this->obtenerConexion(  $usr);
  
             //OBTENER NRO REG DE USUARIO a partir de su NICK

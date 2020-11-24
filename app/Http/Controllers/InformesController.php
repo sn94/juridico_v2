@@ -29,6 +29,7 @@ class InformesController extends Controller
     *POR CADA CUOTA
     */
     public function informes_arr_extr(Request $request, $html= 'S' ){  
+        $this->obtenerConexion();
         $fecha= "";
         if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
      
@@ -74,6 +75,7 @@ class InformesController extends Controller
  */
 
  public function informes_arreglos_resumen(Request $request, $html= 'S' ){  
+    $this->obtenerConexion();
         $fecha= "";
         if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
      
@@ -130,6 +132,7 @@ class InformesController extends Controller
  
  
 public function informes_cuenta_judicial(Request $request, $html= 'S' ){  
+    $this->obtenerConexion();
    /* set_time_limit(0);
     ini_set('memory_limit', '-1');*/
     $CEDULA = $request->input("CEDULA"); 
@@ -202,6 +205,7 @@ public function informes_cuenta_judicial(Request $request, $html= 'S' ){
  
 
 public function  reporte_arreglo_extrajudicial( $Titulo,  $resultados){
+    $this->obtenerConexion();
     set_time_limit(0);
     ini_set('memory_limit', '-1');
      // Genera un PDF
@@ -318,6 +322,7 @@ public function  reporte_arreglo_extrajudicial( $Titulo,  $resultados){
 
 
 public function  reporte_cuenta_judicial( $Titulo,  $resultados){
+    $this->obtenerConexion();
     set_time_limit(0);
     ini_set('memory_limit', '-1');
      // Genera un PDF

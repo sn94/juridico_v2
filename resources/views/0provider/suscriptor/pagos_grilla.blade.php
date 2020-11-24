@@ -1,4 +1,10 @@
  
+ <?php
+
+use App\Helpers\Helper;
+
+
+ ?>
     
     <table class="table table-bordered table-dark">
 
@@ -8,7 +14,7 @@
 
     @foreach( $pagos as $cli )
     <tr>
-    <td class="text-center">{{$cli->IDNRO}}</td> <td>{{$cli->FECHA}}</td>  <td> {{$cli->COMPROBANTE}} </td> <td> {{$cli->VALIDEZ}} </td>
+    <td class="text-center">{{$cli->IDNRO}}</td> <td>{{ Helper::beautyDate($cli->FECHA)}}</td>  <td> {{$cli->COMPROBANTE}} </td> <td> {{ Helper::beautyDate($cli->VALIDEZ)}} </td>
     </tr>
     @endforeach
     </tbody>

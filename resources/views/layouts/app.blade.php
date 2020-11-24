@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\URL;
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
-    <meta name="author" content="Marx JMoura">
+    <meta name="author" content="Sonia Toledo">
     <meta name="description" content="Admin 4B. Open source and free admin template built on top of Bootstrap 4. Quickly customize with our Sass variables and mixins.">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>Sistema de Control de Juicios</title>

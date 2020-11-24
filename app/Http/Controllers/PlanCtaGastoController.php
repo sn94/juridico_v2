@@ -23,19 +23,20 @@ class PlanCtaGastoController extends Controller
     }
   
     public function index(){
+        $this->obtenerConexion();
        // if ( $request->ajax() )
       
        $dato= Codigo_gasto::orderBy('IDNRO', 'desc')->paginate(20); 
        return view("plan_cuenta.index",
         ["lista"=>  $dato,  "url_agregar"=> url("plan-cuenta"), 
-        "ruta_listado"=> url("plan-cuenta-list"),  "breadcrumbcolor"=>"#fdc673 !important;"] );
+        "ruta_listado"=> url("plan-cuenta-list")] );
        
     }
 
 
 
     public function cargar(Request $request, $ope= "A", $id=""){
-        
+        $this->obtenerConexion();
         if( sizeof(  $request->all() )  > 0){
             $cod_gasto=null;
             if( $ope == "A"){   $cod_gasto= new Codigo_gasto();    }  
@@ -85,6 +86,7 @@ class PlanCtaGastoController extends Controller
     
 
     public function borrar($idnro){
+        $this->obtenerConexion();
         if( Codigo_gasto::find($idnro)->delete())
         echo json_encode( array("ok"=> "BORRADO" )  );
         else
@@ -97,6 +99,7 @@ class PlanCtaGastoController extends Controller
 
 
     public function listar( Request $request){  
+        $this->obtenerConexion();
         $dato= Codigo_gasto::orderBy('IDNRO', 'desc')->paginate(20); 
         if( $request->ajax())
         return view("plan_cuenta.grilla", ["lista"=>  $dato] );
@@ -115,7 +118,7 @@ class PlanCtaGastoController extends Controller
 //para clases css referenciarlas mediante comillas dobles
  
 public function reporte(  $tipo="xls"){ 
-
+    $this->obtenerConexion();
     $Movi= Codigo_gasto::orderBy("CODIGO")->get(); 
    
 
@@ -179,6 +182,7 @@ public function reporte(  $tipo="xls"){
 
 
 public function demandas($CI){
+    $this->obtenerConexion();
     $titu= Demandados::where("CI", $CI)->first()->TITULAR;
     $demanda=Demanda::select( 'IDNRO', 'COD_EMP', 'DEMANDA', 'cod_gasto', 'CTA_cod_gasto')->where("CI",$CI)->get();
     return view("gastos.demanda_chooser", ['demandas'=> $demanda, 'TITULAR'=> $titu ]);

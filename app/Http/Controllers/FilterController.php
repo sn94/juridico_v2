@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\CuentaJudicial;
-use App\Demanda;
+ 
 use App\Filtros;
 use App\Http\Controllers\Controller;
-use App\MovCuentaJudicial;
-use App\Notificacion;
-use App\ODemanda;
+ 
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;   
-use App\Parametros;
-use App\pdf_gen\PDF;
-use DeepCopy\Filter\Filter;
-use Illuminate\Http\Client\Request as ClientRequest;
+use App\pdf_gen\PDF;  
  
 class FilterController extends Controller
 {
@@ -32,8 +26,10 @@ class FilterController extends Controller
     
 
 public function index(Request $request ){  
-    
-    $lista= Filtros::orderBy('NRO','DESC')->paginate(20);
+    $this->obtenerConexion();
+    $lista= Filtros::orderBy('NRO','DESC')
+    ->where("ABOGADO", session("abogado"))
+    ->paginate(20);
     if( $request->ajax())
     return view('informes.filtros.grilla', [ "lista"=> $lista, 
     'ejecucionxls'=> url("exexlsfiltro"),  'ejecucionpdf'=> url("exepdffiltro") ] );
@@ -45,8 +41,11 @@ public function index(Request $request ){
 
 
 public function filtro_orden( Request $request, $col, $sentido){
+    $this->obtenerConexion();
     $orden= $sentido== "A" ?"ASC" : "DESC";
-    $dato= Filtros::orderBy($col, $orden )->paginate(20); 
+    $dato= Filtros::orderBy($col, $orden )
+    ->where("ABOGADO", session("abogado"))
+    ->paginate(20); 
 
 if( $request->ajax()){
      if($dato->count() )
@@ -60,6 +59,7 @@ if( $request->ajax()){
 }
 
 public function get_name($id){
+    $this->obtenerConexion();
     echo json_encode( array("nombre"=> Filtros::find($id)->NOMBRE) );
 }
  
@@ -71,11 +71,12 @@ public function get_name($id){
  * Recoge de la BD los campos de tablas que seran utilizados para crear filtros
  */
 public function get_parametros( $opc){
-    
+    $this->obtenerConexion();
     $tablas= array();
     $parametr=array();
-    $pa=DB::table("param_filtros")-> select('ORDEN','TABLA' ,'TABLA_FRONT')->distinct()->orderBy("ORDEN","ASC")->
-    where("TIPO", "<>", NULL)->get();
+    $pa=DB::table("param_filtros")-> select('ORDEN','TABLA' ,'TABLA_FRONT')->distinct()->orderBy("ORDEN","ASC")
+    
+    ->where("TIPO", "<>", NULL)->get();
     //tablas y sus nombres
      foreach( $pa as $item){
         $tablas[$item->TABLA]= $item->TABLA_FRONT;
@@ -106,6 +107,7 @@ public function get_parametros( $opc){
  */
 
 public function relaciones_filtro(){
+    $this->obtenerConexion();
     $tablas= array();
     $pa=DB::table("param_filtros")-> select('TABLA')->where("TIPO", "<>", NULL)->get();
     //tablas y sus nombres
@@ -123,9 +125,11 @@ public function relaciones_filtro(){
 
    
 public function cargar( Request $request, $OPERACION= "A", $id=""){
+    $this->obtenerConexion();
     if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
         //Quitar el campo _token
         $Params=  $request->input();  
+        $Params['ABOGADO']= session("abogado");
 
          DB::beginTransaction();
         try{
@@ -162,6 +166,7 @@ public function cargar( Request $request, $OPERACION= "A", $id=""){
  
 
 public function borrar( $NRO){
+    $this->obtenerConexion();
     $ob= DB::table("filtros")->where('NRO',$NRO , 1)->delete();
    if( $ob ) echo json_encode( array('IDNRO'=>  $NRO  ) );
    else json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos") );
@@ -169,7 +174,8 @@ public function borrar( $NRO){
 }
 
 public function list( $tabl){
-    $ls= DB::table( "filtros")->get();
+    $this->obtenerConexion();
+    $ls= DB::table( "filtros") ->where("ABOGADO", session("abogado"))->get();
     $L= <<<EOF
     
     EOF;
@@ -185,6 +191,7 @@ EOF;*/
 
 
 private function limpiarQuery( $SqlParam ){
+    $this->obtenerConexion();
     $sql= $SqlParam;
     //Verificar si es una sentencia sql antigua
     if( ! preg_match("/\s*select\s*/i", $sql)  ){
@@ -224,6 +231,7 @@ private function limpiarQuery( $SqlParam ){
  
 
 public function aviso_recorte_cols( $id_consulta){
+    $this->obtenerConexion();
     $Filtro= Filtros::find( $id_consulta);
     $resultados= $this->limpiarQuery( $Filtro->FILTRO );//Prepara la sentencia sql la ejecuta
     if( sizeof( $resultados) ){
@@ -235,6 +243,7 @@ public function aviso_recorte_cols( $id_consulta){
 
 
 private function filtro_inteligente_th($clave){
+    $this->obtenerConexion();
     $html="";
     $cssclass= strtolower( $clave);
     $html.="<th class=\"$cssclass\">$clave</th>";    
@@ -242,6 +251,7 @@ private function filtro_inteligente_th($clave){
 }
 
 private function filtro_inteligente_td($clave, $VALOR){
+    $this->obtenerConexion();
 $html="";
 $valor= $VALOR;
 
@@ -286,6 +296,7 @@ elseif( $clave=="JUEZ"){
 }
 
 public function  reporte( $id_consulta, $tipo="xls", $onlyHtml= "N"){
+    $this->obtenerConexion();
     set_time_limit(0);
     ini_set('memory_limit', '-1');
     $Filtro= Filtros::find( $id_consulta);

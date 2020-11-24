@@ -21,6 +21,7 @@ class AuxiController extends Controller
 
     public function __construct()
     {
+      //  parent::__construct();
         date_default_timezone_set("America/Asuncion");
     }
    
@@ -28,6 +29,7 @@ class AuxiController extends Controller
     
 
 public function index( $tabl="demandan"){
+    $this->obtenerConexion();
     $ls= DB::table( $tabl)->get();
     $ruta_listado= url("lauxiliar/$tabl");
     return view('auxiliares.index' ,
@@ -39,6 +41,7 @@ public function index( $tabl="demandan"){
 
 /**OBTENER REGISTROS A PARTIR DEL NOMBRE DE LA TABLA ****/
  public function get( $tabla ){
+    $this->obtenerConexion();
         //pROPORCIONAR RUTAS A LOS RECURSOS 
         $registro= array();
         if( $tabla =="odemanda")
@@ -51,7 +54,8 @@ public function index( $tabl="demandan"){
 
    
 public function agregar( Request $request){
-    if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
+    if(  request()->isMethod("POST"))  {//hay datos 
+        $this->obtenerConexion();
         //Quitar el campo _token
         $Params=  $request->input(); 
         //Devuelve todo elemento de Params que no este presente en el segundo argumento
@@ -80,7 +84,8 @@ public function agregar( Request $request){
 
    
 public function editar( Request $request, $tabl="", $idnro=""){
-    if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
+    $this->obtenerConexion();
+    if(  request()->isMethod("POST"))  {//hay datos 
         //Quitar el campo _token
         $Params=  $request->input(); 
         //Devuelve todo elemento de Params que no este presente en el segundo argumento
@@ -109,6 +114,7 @@ public function editar( Request $request, $tabl="", $idnro=""){
 
 
 public function borrar( $tabl, $idnro){
+    $this->obtenerConexion();
     $ob= DB::table($tabl)->where('IDNRO',$idnro , 1)->delete();
    if( $ob ) echo json_encode( array('ok'=>  "BORRADO"  ) );
    else json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos") );
@@ -116,7 +122,9 @@ public function borrar( $tabl, $idnro){
 }
 
 public function list( $tabl){
-    $ls= DB::table( $tabl)->get();
+    $this->obtenerConexion();
+    $OrderField= (  $tabl == "odemanda")?  "NOMBRES" :  "DESCR";
+    $ls= DB::table( $tabl)->orderBy(  $OrderField)->get();
     return view('auxiliares.grilla' , ["lista"=>  $ls, "TABLA"=> $tabl  ]);
 }
 

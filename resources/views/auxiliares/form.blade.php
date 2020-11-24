@@ -51,7 +51,7 @@ $rutaOdema= isset($OPERACION)?  ($OPERACION=="A" ? url("nuevoaux"): url("editaux
    
 
   <div  class="col-12 col-sm-3 col-md-2 col-lg-2 d-flex align-items-center">
-        <button type="submit" class="btn btn-sm btn-info">GUARDAR</button>
+        <button type="submit" class="btn btn-sm btn-primary">GUARDAR</button>
   </div>
 </div>
 
@@ -63,7 +63,7 @@ $rutaOdema= isset($OPERACION)?  ($OPERACION=="A" ? url("nuevoaux"): url("editaux
       <input maxlength="50"   value="{{isset($DATO)?$DATO->DESCR:''}}"    name="DESCR"  type="text"  class="form-control form-control-sm">
     </div>
   <div  class="col-12 col-sm-3 col-md-3 col-lg-2">
-        <button type="submit" class="btn btn-sm btn-info">GUARDAR</button>
+        <button type="submit" class="btn btn-sm btn-primary">GUARDAR</button>
   </div>
 </div>
 

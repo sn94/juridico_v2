@@ -30,6 +30,7 @@ class NotifiController extends Controller
 
 
   public function ficha(  $idnro){
+      $this->obtenerConexion();
     $data= Notificacion::find( $idnro);
     $demanObj=  Demandados::where("CI", $data->CI)->first(); 
     return view("notificaciones.ficha", ['ficha'=>   $data, 'idnro'=>$idnro, 'ci'=> $demanObj->CI , 'nombre'=>  $demanObj->TITULAR] );
@@ -41,7 +42,7 @@ class NotifiController extends Controller
 /**Nuevos datos de seguimiento */
 
 public function agregar( Request $request, $iddeman=0){
-    
+    $this->obtenerConexion();
     if( ! strcasecmp(  $request->method() , "post"))  {//hay datos
             
         if( $iddeman == 0)  $iddeman= $request->input("IDNRO"); 
@@ -95,6 +96,7 @@ public function agregar( Request $request, $iddeman=0){
 
  
 public function editar( Request $request, $iddeman=0){
+    $this->obtenerConexion();
     $notimodel= NULL;
     if( $iddeman == 0) $iddeman= $request->input("IDNRO");
     $notimodel= Notificacion::find( $iddeman);
@@ -144,6 +146,7 @@ public function editar( Request $request, $iddeman=0){
 
 
     private function fecha_sgte( $fecha){  
+        $this->obtenerConexion();
        //convertir a segundos
         //strtotime recibe la fecha en formato Y-m-d
         $date1 = strtotime( $fecha  ); //fecha en seg 
@@ -152,6 +155,7 @@ public function editar( Request $request, $iddeman=0){
     }
 
     private function is_fecha_vencimiento( $fech, $dias=""){
+        $this->obtenerConexion();
         /****DIAS PARA EL VENCIMIENTO */
         $dias_param=DB::table("parametros")->get("DIASVTO")->first()->DIASVTO;
         $diavto= $dias!="" ? intval($dias) : intval( $dias_param  );
@@ -176,6 +180,7 @@ public function editar( Request $request, $iddeman=0){
     }
 
     private function get_fecha_vencimiento( $fech, $dias=""){
+        $this->obtenerConexion();
         /****DIAS PARA EL VENCIMIENTO */
         $dias_param=DB::table("parametros")->get("DIASVTO")->first()->DIASVTO;
         $diavto= $dias!="" ? intval($dias) : intval( $dias_param  );
@@ -241,6 +246,7 @@ select `notificaciones`.`IDNRO`, `NOTIFI_1`, DATEDIFF( NOTIFI_1, NOW()) AS NOTIF
 
     //GRABAR NOTIFICACIONES
     public function procesar_notifi_venc(){
+        $this->obtenerConexion();
         set_time_limit(0);
         ini_set('memory_limit', '-1');
         //DB::enableQueryLog();
@@ -533,7 +539,7 @@ select `notificaciones`.`IDNRO`, `NOTIFI_1`, DATEDIFF( NOTIFI_1, NOW()) AS NOTIF
  * Lista de demandas con fecha de  notificaciones vencidas
  */
     public function notificaciones_venc(){
-     
+        $this->obtenerConexion();
         $vtos= DB::table("vtos") 
         ->join("demandas2", "demandas2.IDNRO","=","vtos.IDNRO")
         ->join("demandado", "demandas2.CI","=","demandado.CI")
@@ -572,6 +578,7 @@ select `notificaciones`.`IDNRO`, `NOTIFI_1`, DATEDIFF( NOTIFI_1, NOW()) AS NOTIF
 
 
     public function borrar_noti_vencidas(){
+        $this->obtenerConexion();
         DB::beginTransaction();
        try{
         $borrar= DB::table("vtos")
@@ -598,6 +605,7 @@ select `notificaciones`.`IDNRO`, `NOTIFI_1`, DATEDIFF( NOTIFI_1, NOW()) AS NOTIF
     
 
 public function  reporte( Request $request, $tipo="XLS" ){
+    $this->obtenerConexion();
     set_time_limit(0);
     ini_set('memory_limit', '-1');
      // Genera un PDF

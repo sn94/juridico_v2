@@ -376,8 +376,9 @@ public function borrar( $id){
     ->paginate(10);
     $suscr= Suscriptores::find( $idcliente);
     $razon_social=  $suscr->RAZON_SOCIAL;
-
-
+    if(  request()->ajax())
+    return view("0provider.suscriptor.pagos_grilla", [  'pagos'=>  $pagos ]);
+    else
     return view("0provider.suscriptor.pagos", [ 'IDCLIENTE'=>$idcliente, 'RAZONSOCIAL'=> $razon_social,  'pagos'=>  $pagos ]);
  
 

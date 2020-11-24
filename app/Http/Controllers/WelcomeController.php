@@ -29,32 +29,21 @@ class WelcomeController extends Controller
    
 
   
-    private function obtenerConexion( $keepDefaultSetting=  false ){
-        if(  $keepDefaultSetting)  return;
-        $systemid=  session("system");  
-        $DataBaseName= "cli_".$systemid;
-        $configDb = array(
-            'driver' => 'mysql',
-            'host' => 'localhost',
-            'database' =>  $DataBaseName,
-            'username' =>  env('DB_USERNAME'),
-            'password' =>  env('DB_PASSWORD'),
-            'charset' => 'utf8',
-            'prefix' => '',
-        );
-     
-        Config::set('database.connections.mysql', $configDb);
-       //$conexionSQL = DB::connection('mysql');
-       return $systemid;
-    }
+ 
 
 
 
     public function index( Request $request){
 
-        if( ! $request->session()->has("abogado")) return view("welcome_sin_contexto");
+        if( ! $request->session()->has("abogado")) {
+
+            if( session("tipo")=="SA")
+            return redirect('abogados');
+            else
+            return view("welcome_sin_contexto");
+        }
         
-    $this->obtenerConexion();   
+        $this->obtenerConexion();   
         
         if ( session('tipo') == "S"  || session("tipo")== "SA"  ){
             $Parametros= Parametros::first();

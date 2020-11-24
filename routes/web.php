@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
  
 
-/***panel de proveedor de servicios
+/***
+ * MODULO ADMINISTRADORES
  * 
  */
 Route::get('signin/p', "ProveedorController@sign_in");
@@ -79,9 +80,22 @@ Route::post('p/pago', "SuscriptoresController@pago"); //Registrar pago
 Route::get('suscripcion', "SuscriptoresController@solicitar"); 
 Route::post('suscripcion', "SuscriptoresController@paso1_suscriptor");
 Route::get('usuario-existe/{nick}', "UserController@validar_existencia_usuario"); 
+
+
+
+
+
+/***
+ * **********************
+ * **********************
+ * **********************
+ * MODULO CLIENTE
+ * **********************
+ * **********************
+ * **********************
+ *****/
 Route::get('/', "WelcomeController@index");//una vez autenticado
 Route::get('denegado', "WelcomeController@unauthorized");
-
 Route::get('signin',   'UserController@sign_in');
 Route::post('signin',   'UserController@sign_in');
 Route::get('signout',   'UserController@sign_out'); 
@@ -91,22 +105,17 @@ Route::get('signout',   'UserController@sign_out');
 Route::post("session-abogados", "AbogadoController@select_cod_abogado"); 
 
 
-
-
-
+//Verifica si ya se supero el limite de usuarios
+Route::get( 'user-creation-alowed' ,  "UserController@user_creation_is_alowed");
 /*
-Datos personales
+Forms de "Datos personales " que no dependen de niveles de usuario
 */
     /*************************LISTADO*****************/
 Route::get("ldemandados", "DatosPersoController@index"); //lista datos personales
 Route::get("ldemandados/{argumento}", "DatosPersoController@index"); //lista datos personales
-//garantes
 Route::get("lgarantes", "DatosPersoController@index_garantes"); //lista datos codeudor
 Route::get("lgarantes/{argumento}", "DatosPersoController@index_garantes"); //lista datos codeudor
-
 Route::get("existe-ci/{ci}", "DatosPersoController@existe"); //existencia de Nro de CI
-/****************************C R U D************** */
-
 Route::post("ndemandado", "DatosPersoController@nuevo"); //Agregar datos personales
 Route::get("vdemandado/{ci}", "DatosPersoController@view"); //vista datos personales
 
@@ -383,6 +392,31 @@ Route::get('bank-informes',   'BancoController@informes');
 Route::post('bank-informes',   'BancoController@informes'); 
 Route::get('bank-informes/{tipo}',   'BancoController@informes'); 
 Route::post('bank-informes/{tipo}',   'BancoController@informes'); 
+
+
+
+
+
+
+/*****
+ * MODULO RECIBOS FREE  
+ * ****
+ */
+Route::get('recibos-free',   'RecibosFreeController@index'); 
+Route::get('recibos-free/freeuser',   'RecibosFreeController@nuevo_freeuser'); 
+Route::post('recibos-free/freeuser',   'RecibosFreeController@nuevo_freeuser'); 
+Route::get('recibos-free/login-freeuser',   'RecibosFreeController@login_freeuser'); 
+Route::post('recibos-free/login-freeuser',   'RecibosFreeController@login_freeuser'); 
+Route::get('recibos-free/logout-freeuser',   'RecibosFreeController@logout_freeuser'); 
+Route::get('recibos-free/menu-freeuser',   'RecibosFreeController@freeuser_menu'); 
+Route::get('recibos-free/nuevo',   'RecibosFreeController@nuevo');  
+Route::post('recibos-free/nuevo',   'RecibosFreeController@nuevo'); 
+Route::get('recibos-free/print/{idrecibo}',   'RecibosFreeController@print'); 
+Route::get('recibos-free/pdf/{idrecibo}',   'RecibosFreeController@recibo_pdf'); 
+Route::get('recibos-free/list',   'RecibosFreeController@listar'); 
+Route::post('recibos-free/mailto',   'RecibosFreeController@send_email'); 
+Route::get('recibos-free/mailto/{idrecibo}',   'RecibosFreeController@send_email'); 
+
 
 Route::get('test',   'ProduccionController@COMPATIBILIDAD_TELEFONOS');
 

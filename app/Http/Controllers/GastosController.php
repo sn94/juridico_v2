@@ -28,6 +28,7 @@ class GastosController extends Controller
   
     public function index( Request $request){
      
+        $this->obtenerConexion();
        $dato= Gastos::addSelect(['CODIGO' => Codigo_gasto::select('CODIGO')
        ->whereColumn('IDNRO', 'gastos.CODIGO') 
    ])->paginate(20); 
@@ -50,7 +51,7 @@ class GastosController extends Controller
 
 
     public function ordenar( Request $request, $columna, $sentido){
-           
+        $this->obtenerConexion();
         $orden= $sentido== "A" ?"ASC" : "DESC";
        $dato= Gastos::addSelect(['CODIGO' => Codigo_gasto::select('CODIGO')
        ->whereColumn('IDNRO', 'gastos.CODIGO') 
@@ -72,7 +73,7 @@ class GastosController extends Controller
     }
 
     public function cargar(Request $request, $ope= "A", $id=""){
-        
+        $this->obtenerConexion();
         if( sizeof(  $request->all() )  > 0){
             $banco=null;
             if( $ope == "A")   $banco=new Gastos();
@@ -114,6 +115,7 @@ class GastosController extends Controller
     
 
     public function borrar($idnro){
+        $this->obtenerConexion();
         $d=     Gastos::find($idnro)->delete();
         echo json_encode( array("IDNRO"=> $idnro )  );
     }
@@ -121,6 +123,7 @@ class GastosController extends Controller
 
  
   public function filtrarPorCodigo( Request $request, $codigo){
+    $this->obtenerConexion();
     $dato= Gastos::addSelect(['CODIGO' => Codigo_gasto::select('CODIGO')
     ->whereColumn('IDNRO', 'gastos.CODIGO') 
 ])->where("CODIGO", $codigo)->paginate(20); 
@@ -135,7 +138,7 @@ if( $request->ajax())
   }
 
   private function listar_datos_segun_param($request){
-    
+    $this->obtenerConexion();
     $dato= null;
     if( ! strcasecmp(  $request->method() , "post"))  {
 
@@ -169,6 +172,7 @@ if( $request->ajax())
   }
 
     public function listar( Request $request){  
+        $this->obtenerConexion();
         $dato= $this->listar_datos_segun_param( $request);
         if( $request->ajax())
         {
@@ -191,6 +195,7 @@ if( $request->ajax())
 //para clases css referenciarlas mediante comillas dobles
  
 public function reporte(Request $request,  $tipo="xls"){ 
+    $this->obtenerConexion();
     set_time_limit(0);
     ini_set('memory_limit', '-1');
     $Movi=  $this->listar_datos_segun_param( $request);
@@ -286,6 +291,7 @@ public function reporte(Request $request,  $tipo="xls"){
 
 
 public function demandas($CI){
+    $this->obtenerConexion();
     $titular= Demandados::where("CI", $CI)->first();
     if( is_null( $titular)){
         return view("gastos.demanda_chooser", ['error'=> "NO SE REGISTRA ESE NUMERO DE CEDULA" ]);
@@ -298,7 +304,7 @@ public function demandas($CI){
 }
 //CODIGO DE COMPATIBILIDAD
 public function  importar_registros(){
-
+    $this->obtenerConexion();
 
     //Obtener instancias de movimiento de cuenta
     //Actualizar el campo IDBANCO de los mismos
@@ -329,7 +335,7 @@ public function  importar_registros(){
 
 
 public function asignarCodigoGasto(){
-   
+    $this->obtenerConexion();
     set_time_limit(0);
     ini_set('memory_limit', '-1');
     $reg=Gastos::get();

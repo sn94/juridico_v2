@@ -13,11 +13,31 @@ class OperadorMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
+    public function rutas_permitidas_sin_abogado($request)
+    {
+      if(  $request->session()->has("abogado"))  return true; 
+      $permitidas = ["\/", "abogados", "user", "signout",  "denegado"];
+      $permitir = false;
+      foreach ($permitidas as $ruta) :
+        if (preg_match("/$ruta/", $request->path())) {
+          $permitir = true;
+          break;
+        }
+      endforeach;
+      return $permitir;
+    }
+
+
     public function handle($request, Closure $next)
     {
-        if( session("tipo") == "O" ||   session("tipo") == "S")
-        return $next($request);
-        else
-        return redirect("denegado");
+        if (session("tipo") == "O" ||   session("tipo") == "S") {
+
+            if (!$this->rutas_permitidas_sin_abogado($request)) {
+                return  redirect("/");
+            } else {
+                return $next($request);
+            }
+        } else
+            return redirect("denegado");
     }
 }

@@ -57,7 +57,7 @@
 						let resp= await fetch("<?=url("usuario-existe")?>/"+nick );
 						let resjson= await  resp.json();
 						if( "error"  in   resjson){
-							alert(  resjson.error)
+							alert(  resjson.error);
 						}
 						else ev.target.submit();
 

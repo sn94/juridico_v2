@@ -15,7 +15,7 @@
 
 <!--BOTON INFORMES --> 
 <a  href="<?= url("plan-cuentas-rep")?>" data-toggle="modal" data-target="#show_opc_rep" onclick="mostrar_informe(event)" style="color:black;" > <i class="mr-2 ml-2 fa fa-print fa-lg" aria-hidden="true"></i></a>
-<a style="background-color: #fdc673; color:black;" class="btn btn-info btn-sm" href="{{$url_agregar}}" onclick="mostrarFormulario(event)" data-toggle="modal" data-target="#showform">NUEVO</a>
+<a class="btn btn-primary btn-sm" href="{{$url_agregar}}" onclick="mostrarFormulario(event)" data-toggle="modal" data-target="#showform">NUEVO</a>
 
  
 <div id="statusform" >
