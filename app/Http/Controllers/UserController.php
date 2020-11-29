@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Parametros;
 use App\RecoveryPassword;
 use App\User;
+use App\User_contextos;
 use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
@@ -123,6 +124,16 @@ public function agregar( Request $request){
              $r= new User(); 
              $r->fill(  $Params  );  
              $r->save();
+
+             //asignacion de codigo de abogados
+             if( array_key_exists("ABOGADO",  $Params) ){
+                 foreach( $Params['ABOGADO']  as $abocod){
+                     $insta=  new User_contextos();
+                     $insta->USER=  $r->IDNRO;
+                     $insta->ABOGADO= $abocod;
+                     $insta->save();
+                 }
+             }
              echo json_encode( array('ok'=>  "GUARDADO"  ));    
             DB::commit();
             $correo= new Correo();
@@ -177,6 +188,22 @@ public function editar( Request $request, $id=0){
              $r= User::find( $request->input("IDNRO") ); 
              $r->fill(  $Params  );  
              $r->save();
+
+
+             
+             //asignacion de codigo de abogados
+         
+             if( array_key_exists("ABOGADO",  $Params) ){
+                 User_contextos::where(  "USER",  $request->input("IDNRO"))->delete();
+                foreach( $Params['ABOGADO']  as $abocod){
+                    $insta=  new User_contextos();
+                    $insta->USER=  $r->IDNRO;
+                    $insta->ABOGADO= $abocod;
+                    $insta->save();
+                }
+            }
+
+
              echo json_encode( array('ok'=>  "ACTUALIZADO"  ));    
             DB::commit();
             if(  array_key_exists("pass",  $Params )  )
@@ -187,20 +214,23 @@ public function editar( Request $request, $id=0){
             catch(Exception $er){     echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );}
          
         }   
-    }
-    else  {   
-        try{ 
-            $dato= User::find( $id );
-             //registros de abogados
-         $abogados_l= Abogados::select("abogados.IDNRO", DB::raw( "concat(  abogados.NOMBRE, concat(' ', abogados.APELLIDO) ) as NOMBRES") )->get();
+    } else {
+            try {
+                $dato = User::find($id);
+                //registros de abogados
+                
+                $abogados_aso = Abogados::
+                select("abogados.IDNRO", DB::raw("concat(  abogados.NOMBRE, concat(' ', abogados.APELLIDO) ) as NOMBRES"),
+                DB::raw(" IF( (select ABOGADO FROM usu_contextos WHERE USER=$id AND ABOGADO=abogados.IDNRO) IS NOT NULL, '1','0') as MARCAR") 
 
-            return view('auth.form' , ["DATO"=> $dato , 'abogados'=> $abogados_l, "OPERACION"=>"M"]  );
-        }catch( Exception $er){
-            echo "error al recuperar formulario";
+                ) ->get()  ;
+                  
+                return view('auth.form', ["DATO" => $dato, 'abogados' => $abogados_aso, "OPERACION" => "M"]);
+            } catch (Exception $er) {
+                echo $er. "error al recuperar formulario";
+            }
         }
-       
-
-     }/** */    
+        /** */    
  }
 
 
@@ -256,6 +286,16 @@ public function validar_existencia_usuario( $usr){
     }
 }
 
+
+public function obtener_id_abogado_asoc(  $idu){
+    $usr= User::find(   $idu );
+    if( ! is_null($usr) ){
+
+        $list = User_contextos::where("USER", $idu)->get();
+         return $list; 
+    } return  [];
+}
+
 public function sign_in( Request $request){
      
     
@@ -301,7 +341,21 @@ public function sign_in( Request $request){
 
 
                     $SesionDatos = array( 	'id' => $id_usr, 'nick'  => $usr, 'tipo' => $tipo, 'system'=> $systemid);
-                    if(  $tipo == "S") $SesionDatos['abogado']= $d_u->ABOGADO; 
+                    //Supervisor == ABOGADO
+                    if ($tipo == "S")
+                    $SesionDatos['abogado'] = $d_u->ABOGADO;
+                    else {
+                        if ($tipo != "SA") {
+                            $id_A = $this->obtener_id_abogado_asoc($d_u->IDNRO);
+                            $AbogadosAsig= sizeof($id_A);
+                            if ( $AbogadosAsig > 0) {
+                                if( $AbogadosAsig == 1 )
+                                $SesionDatos['abogado'] = $id_A->IDNRO;
+                                 
+                            } else
+                                return view("auth.login", array("errorSesion" => "Aún no se le ha asignado un código de abogado. Consulte con el administrador"));
+                        }
+                    }
 
                     // Via a request instance... 
                     session( $SesionDatos); 
@@ -319,9 +373,13 @@ public function sign_in( Request $request){
                         //->queue(   new AuthAlert(  $usr,  ["user-agent"=>$UserAgent, "ip"=>$Ip] ) );
                        ->send(  new AuthAlert(  $usr,   ["user-agent"=>$UserAgent, "ip"=>$Ip]  ) );
                       }catch( Exception $e){}
-                   }//end empty email control
-                 
-                return redirect(  url("/") ); 
+                   } //end empty email control
+
+                    if ($tipo == "SA")
+                    return redirect(url("session-abogados"));
+                    else
+                        return redirect(url("/"));
+                        
                 }else{
                 //	echo json_encode(  array('error' => "Clave incorrecta" )); 
                     return view("auth.login", array("errorSesion"=> "Clave incorrecta") );

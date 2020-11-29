@@ -14,19 +14,6 @@ class AdminMiddleware
      * @return mixed
      */
 
-  public function rutas_permitidas_sin_abogado($request)
-  {
-    if(  $request->session()->has("abogado"))  return true; 
-    $permitidas = ["\/", "abogados", "user", "signout",  "denegado"];
-    $permitir = false;
-    foreach ($permitidas as $ruta) :
-      if (preg_match("/$ruta/", $request->path())) {
-        $permitir = true;
-        break;
-      }
-    endforeach;
-    return $permitir;
-  }
 
 
 
@@ -34,16 +21,10 @@ class AdminMiddleware
   {
 
     if (session("tipo") == "S"  ||   session("tipo") == "SA") {
-      if ((session("tipo") == "S")  && (preg_match("/abogados/",  $request->path())  > 0))
-        return redirect("denegado");
-      else {
-        if (!$this->rutas_permitidas_sin_abogado($request))
-         return  redirect("/");
-        else
-          return $next($request);
-      }
+      return $next($request);
     } else {
       return redirect("denegado");
     }
   }
+  
 }

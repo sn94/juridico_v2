@@ -17,7 +17,7 @@ class Parametros extends Model
 
     protected $fillable= [  'INTERES','MORA','IVA','SEGURO','REDONDEO','HONORARIOS','PUNITORIO',
     'GASTOSADMIN','DIASVTO','FACTURA','RECIBO','FECMIN','FECMAX', 'EMAIL', 'SHOW_COUNTERS', 'DEPOSITO_CTA_JUDICI',
-    'ABOGADO'];
+    'ABOGADO',  'FREC_NOTI'];
 
 
     

@@ -30,13 +30,10 @@ class OperadorMiddleware
 
     public function handle($request, Closure $next)
     {
-        if (session("tipo") == "O" ||   session("tipo") == "S") {
+        if (session("tipo") == "O" ||   session("tipo") == "S" ||   session("tipo") == "SA") {
 
-            if (!$this->rutas_permitidas_sin_abogado($request)) {
-                return  redirect("/");
-            } else {
-                return $next($request);
-            }
+             return $next($request);
+            
         } else
             return redirect("denegado");
     }

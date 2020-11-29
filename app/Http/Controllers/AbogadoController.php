@@ -26,10 +26,10 @@ class AbogadoController extends Controller
        
         date_default_timezone_set("America/Asuncion");
     }
-  
 
 
-   /* private function obtenerConexion( $keepDefaultSetting=  false ){
+
+    /* private function obtenerConexion( $keepDefaultSetting=  false ){
         if(  $keepDefaultSetting)  return;
         $systemid=  session("system");  
         $DataBaseName= "cli_".$systemid;
@@ -50,22 +50,24 @@ class AbogadoController extends Controller
 
 
 
-    public function index(){
-     
+    public function index()
+    {
         $this->obtenerConexion();
+ 
+            $cantidad =  Abogados::count();
 
-        $cantidad=  Abogados::count();
-
-        if( $cantidad <= 0){
-            if(  request()->ajax())  return view("abogado.grilla", ["sin_abogados"=> true]);
-            else   return view("abogado.index", ["sin_abogados"=> true]);
-        }else{
-            $abogados= Abogados::paginate(10);
-            if(  request()->ajax())  return view("abogado.grilla",  ['abogados'=>  $abogados  ]);
-            else   return view("abogado.index",  ['abogados'=>  $abogados  ]);
-        }
-     
-       
+            if ($cantidad <= 0) {
+                if (request()->ajax())  return view("abogado.grilla",
+                    ["sin_abogados" => true]
+                );
+                else   return view("abogado.index", ["sin_abogados" => true]);
+            } else {
+                $abogados = Abogados::paginate(10);
+                if (request()->ajax())  return view("abogado.grilla",  ['abogados' =>  $abogados]);
+                else   return view("abogado.index",  ['abogados' =>  $abogados]);
+            }
+         
+      
     }
 
 
@@ -74,31 +76,41 @@ class AbogadoController extends Controller
     public function select_cod_abogado(  ){
         //Realmente existe?
         $this->obtenerConexion();
-        $datos= request()->input();
-        $abo= Abogados::find(  $datos['abogado_code']);
-        if( is_null( $abo) )
-        { 
-           return  response()->json(  ["error"=> "El código que ingresó no existe"  ] );
-           // return view("layouts.error",  ["error"=> "El código que ingresó no existe"  ]);
-        }
-        else
-       {  //Verificar concordancia entre codigo de abogado y PIN
+        if (request()->isMethod("POST")) {
+            $datos = request()->input();
+            $abo = Abogados::find( $datos['abogado_code']);
+            if (is_null($abo)) {
+                return  response()->json(["error" => "El código que ingresó no existe"]);
+                // return view("layouts.error",  ["error"=> "El código que ingresó no existe"  ]);
+            } else {  //Verificar concordancia entre codigo de abogado y PIN
 
-        if( session("tipo") != "SA"):
-                $pin_ingresado=  $datos['abogado_pin'];
-                $pin_hash=  $abo->PIN;
-                if( Hash::check( $pin_ingresado, $pin_hash)){
-                    session(['abogado' => $datos['abogado_code']]);
-                    return redirect(  url("/") );
-                }else{
-                    return  response()->json(  ["error"=> "Pin no válido"  ] );
-                }
-        else:
                 session(['abogado' => $datos['abogado_code']]);
-                return redirect(  url("/") );
-        endif;
-
-        } 
+                return redirect(url("/"));
+               /* if (session("tipo") != "SA") :
+                    $pin_ingresado =  $datos['abogado_pin'];
+                    $pin_hash =  $abo->PIN;
+                    if (Hash::check($pin_ingresado, $pin_hash)) {
+                        session(['abogado' => $datos['abogado_code']]);
+                        return redirect(url("/"));
+                    } else {
+                        return  response()->json(["error" => "Pin no válido"]);
+                    }
+                else :
+                    session(['abogado' => $datos['abogado_code']]);
+                    return redirect(url("/"));
+                endif;*/
+            }
+        } else {
+            $abogados = Abogados::select('abogados.IDNRO', DB::raw("CONCAT(NOMBRE, CONCAT(' ',APELLIDO) ) AS NOMBRES"))
+            ->orderBy("IDNRO");
+            //filtrar
+            if( session("tipo") != "SA"){
+                $abogados= $abogados->join("usu_contextos", "usu_contextos.ABOGADO", "abogados.IDNRO")
+                ->where("usu_contextos.USER", session("id") );
+            }
+            $abogados= $abogados->get();
+            return view("abogado.seleccion", ['abogados' =>  $abogados]);
+        }
     }
 
 

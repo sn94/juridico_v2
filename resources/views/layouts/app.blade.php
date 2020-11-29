@@ -191,6 +191,17 @@ endif;
 
                         </ul>
                     </li>
+
+
+                    <li class="sidebar-nav-group"><a href="#docu" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> DOCUMENTOS</a>
+                        <ul id="docu" class="collapse" data-parent="#sidebar-nav">
+                            <li><a href="<?= url("documentos")?>" class="sidebar-nav-link">Ver</a></li>
+                            <li><a  href="<?= url("documentos/cargar")?>" class="sidebar-nav-link">Cargar</a></li> 
+
+                        </ul>
+                    </li>
+
+
                 </ul>
                 <div class="sidebar-footer"><a href="<?=url("messenger")?>" data-toggle="tooltip" title="Mensajes"><i class="fa fa-comment"></i> </a>
                 
@@ -213,7 +224,7 @@ endif;
                         }
                         @endphp
                         @else
-                        <a style="color: yellow;font-size: 14px;" href="#" onclick="$('#modal-abogado').modal('show')">«Ingresar credenciales de abogado»</a>
+                        <a class="btn btn-danger" style="font-size: 14px;" href="{{url('session-abogados')}}"  >«SELECCIONAR UN ABOGADO PARA HABILITAR LAS FUNCIONES DEL SISTEMA»</a>
                         <div id="abogado-view-error"></div>
                         @endif 
 
@@ -273,57 +284,7 @@ endif;
                 </div>
                     <!-- END CONTENT -->
 
-                
-<div id="modal-abogado" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content p-2 bg-dark text-light" >
-
-    <div class="modal-header">
-        <h5 class="modal-title"> Credenciales </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <label for="">Código de Abogado:</label>
-      <input class="form-control" type="text" id="abogado_code" >
-      @if( session("tipo") !=  "SA")
-      <label for="">PIN:</label>
-      <input class="form-control" type="password" id="abogado_pin" >
-      @endif
-    
-
-      <div class="modal-footer">
-      <a onclick="enviar_codigo_abogado(event)" href="<?=url("session-abogados")?>" class="btn btn-primary" >OK</a>
-      </div>
-
-    </div>
-  </div>
-</div>
-<script>
-  async  function enviar_codigo_abogado( ev){
-        ev.preventDefault();
-        let lawyer=  $("#abogado_code").val();
-        let lawyer_pin= $("#abogado_pin").val();
-        let url= ev.target.href;
-
-        let body= { abogado_code: lawyer, abogado_pin:  lawyer_pin };
-        let setting= { "method":"POST", "body":   JSON.stringify(body) ,headers: {"Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest",  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')} } ;
-        let res=  await fetch(  url , setting);
-       
-        if( res.redirected) window.location=  res.url;
-        else{
-            let res_j=  await res.json();
-            $("#modal-abogado").modal("hide");
-            alert(  res_j.error );
-            $//("#abogado-view-error").html(  res_html );
-            console.log(  res_j);
-        }
-       
-    }
-
-</script>
-
+         
 
 
 
@@ -349,7 +310,8 @@ endif;
     <script src="<?=url("ckeditor/styles.js")?>"></script>
  
     <script src="<?=url("ckeditor/config.js")?>"></script> 
-   
+    <script src="<?=url("assets/js/2.2.4_pdfobject.min.js")?>"></script>
+
 
     <script>
 

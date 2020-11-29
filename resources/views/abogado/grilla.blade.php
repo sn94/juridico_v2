@@ -30,7 +30,8 @@ if( !isset( $abogados) ) return;
         <th  class="pb-0">DOMICILIO</th>
         <th  class="pb-0">TELÉFONO</th>
         <th  class="pb-0">CELULAR</th>
-        <th class="pb-0">PIN</th>
+
+        <th class="pb-0 d-none">PIN</th>
         <th  class="pb-0">REGISTRO</th>
         <th  class="pb-0">MODIFICADO</th>
       <tbody>
@@ -46,7 +47,7 @@ if( !isset( $abogados) ) return;
            <td>{{  $it->DOMICILIO  }}</td>  
            <td>{{  $it->TELEFONO  }}</td>  
            <td>{{  $it->CELULAR  }}</td> 
-           <td><a class="btn btn-sm btn-dark" onclick="regenerar_pin(event)" href="<?=url("abogados/pin-regen/".$it->IDNRO)?>">Regenerar</a></td> 
+           <td class="d-none"><a class="btn btn-sm btn-dark" onclick="regenerar_pin(event)" href="<?=url("abogados/pin-regen/".$it->IDNRO)?>">Regenerar</a></td> 
            <td>{{ Helper::beautyDate( $it->created_at)}}</td>  
            <td>{{  Helper::beautyDate($it->updated_at) }}</td>  
           </tr>

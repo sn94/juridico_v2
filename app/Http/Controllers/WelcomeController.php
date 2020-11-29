@@ -37,9 +37,6 @@ class WelcomeController extends Controller
 
         if( ! $request->session()->has("abogado")) {
 
-            if( session("tipo")=="SA")
-            return redirect('abogados');
-            else
             return view("welcome_sin_contexto");
         }
         
@@ -85,6 +82,7 @@ class WelcomeController extends Controller
   
 
     public function unauthorized(){
+        $this->obtenerConexion();
         return view("layouts.unauthorized");
     }
 

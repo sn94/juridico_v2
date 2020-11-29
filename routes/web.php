@@ -102,15 +102,40 @@ Route::get('signout',   'UserController@sign_out');
 
 
 // C R E A R SESION ABOGADO 
+Route::get("session-abogados", "AbogadoController@select_cod_abogado"); 
 Route::post("session-abogados", "AbogadoController@select_cod_abogado"); 
 
 
 //Verifica si ya se supero el limite de usuarios
 Route::get( 'user-creation-alowed' ,  "UserController@user_creation_is_alowed");
+
+
+
+
+
+
+/******
+ * ************
+ * ********* DOCUMENTOS
+ * ***********
+ * *****
+ */
+Route::get("documentos", "DocumentosController@index"); 
+Route::get("documentos/cargar", "DocumentosController@cargar"); 
+Route::post("documentos/cargar", "DocumentosController@cargar"); 
+Route::get("documentos/delete/{id}", "DocumentosController@delete"); 
+Route::get("documentos/download/{id}", "DocumentosController@download"); 
+Route::get("documentos/download/{id}/{system}", "DocumentosController@download"); 
+Route::get("documentos/path/{id}", "DocumentosController@path"); 
+Route::get("documentos/init", "DocumentosController@crear_enlace_simbolico"); 
 /*
 Forms de "Datos personales " que no dependen de niveles de usuario
 */
-    /*************************LISTADO*****************/
+    /*************
+     * ***
+     * DATOS PERSONALES
+     * ************
+     * *****************/
 Route::get("ldemandados", "DatosPersoController@index"); //lista datos personales
 Route::get("ldemandados/{argumento}", "DatosPersoController@index"); //lista datos personales
 Route::get("lgarantes", "DatosPersoController@index_garantes"); //lista datos codeudor
@@ -125,7 +150,10 @@ Route::get("vdemandado/{ci}", "DatosPersoController@view"); //vista datos person
 
 
 /**
+ * **************
  * Demandas
+ * *************
+ * *************
  */
 /************************C R U D*************** */
 Route::get( "demandas-agregar/{ci}", 'DemandaController@nueva_demandan');
@@ -141,7 +169,6 @@ Route::post( "demandas-agregar", 'DemandaController@nueva_demandan');
 Route::get( "demandas-editar/{iddeman}", 'DemandaController@editar_demandan')->middleware("adminopera");
 Route::get( "demandas-editar/{iddeman}/{tab}", 'DemandaController@editar_demandan')->middleware("adminopera");
 Route::post( "demandas-editar", 'DemandaController@editar_demandan');
-
 Route::post("enotifi", "NotifiController@editar");
 Route::post("eobser", "ObservaController@editar");
 Route::get("edemandado/{idnro}", "DatosPersoController@editar")->middleware("adminopera");
@@ -171,12 +198,25 @@ Route::post("arregloextr-recibo", "ArregloExtrajudiController@mostrarRecibo");//
 
 Route::post("honorarios", "DemandaController@honorarios");//ficha de demandas
 Route::get("ver-recibos/{idarreglo}", "ArregloExtrajudiController@mostrarRecibos");//ficha de demandas
-/* ***** ARREGLO EXTRAJUDICIAL  *********/
+/* ****
+********
+*******
+* ARREGLO EXTRAJUDICIAL  **
+*******/
 Route::post('arreglo_extra',   'ArregloExtrajudiController@agregar'); 
-/***INTERVENCION CONTRAPARTE**** */
+/***
+ * *******
+ * INTERVENCION CONTRAPARTE*
+ * ********
+ * *** */
 Route::post("contraparte/{idnro}", "DemandaController@contraparte"); 
 Route::post("contraparte", "DemandaController@contraparte"); 
-/***FILTROS */
+
+/***
+ * ********************
+ */
+/***FILTROS *
+ * ********************/
 Route::get('filtros',   'FilterController@index');
 Route::get('filtro-nombre/{id}',   'FilterController@get_name');
 Route::get('nfiltro',   'FilterController@cargar');
@@ -194,7 +234,13 @@ Route::get('filtro-orden/{col}/{sentido}',   'FilterController@filtro_orden');
 
 
 
-
+/**
+ * *****
+ * ************************
+ * SUPER ADMIN***
+ * *************************
+ * *****
+ */
 
 Route::group(['middleware' => 'superadmin'], function () {
 

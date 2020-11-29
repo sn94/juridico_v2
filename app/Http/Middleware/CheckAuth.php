@@ -42,7 +42,7 @@ class CheckAuth
   private function rutas_permitidas_sin_auth(   $request  ){
 //rutas permitidas sin autenticacion
     $permitidas= [ "signin", "signin\/p", "solicitar-suscripcion", "paso1_suscriptor", "suscripcion", "usuario-existe",
-  "recovery-password", "reset-password"];
+  "recovery-password", "reset-password",  "documentos\/download"];
   $permitir= false;
     foreach($permitidas as $ruta):
       if(        preg_match("/$ruta/", $request->path() ) ){ $permitir= true; break; }
@@ -50,44 +50,51 @@ class CheckAuth
     return $permitir;
   }
 
-public function rutas_permitidas_sin_abogado( $request){
-  $permitidas= ["\/", "abogados", "user", "signout",  "denegado"];
-  $permitir= false;
-  foreach($permitidas as $ruta):
-    if(        preg_match("/$ruta/", $request->path() ) ){ $permitir= true; break; }
-  endforeach;
-  return $permitir;
-}
+  public function rutas_permitidas_sin_abogado($request)
+  {
+    if ($request->session()->has("abogado"))  return true;
+    else {
 
+      $permitidas = [ "abogados", "user", "signout",  "denegado"];
+      $permitir = false;
+      foreach ($permitidas as $ruta) :
+        if (preg_match("/$ruta/", $request->path())) {
 
+          $permitir = true;
+          break;
+        }
 
-
-
-    public function handle($request, Closure $next)
-    {
-
-        if( preg_match("/recibos-free/",  $request->path() )  > 0 )   return $next($request);//dejar pasar 
-
-
-
-
-         if ($request->session()->has('nick')) {
-           if(  $request->session()->has('provider')  ){
-              $this->obtenerConexion(  true ); return $next($request);//dejar pasar
-           }else{
-             
-           return $next($request);//dejar pasar
-           }
-           
-         }else{
-
-          if( $this->rutas_permitidas_sin_auth( $request) )     return $next($request);//dejar pasar
-          else{
-            if( preg_match( "/p\//" ,  $request->path())  > 0) return redirect('signin/p'); 
-            else   return redirect('signin'); 
-          }
-
-         }
-        
+      endforeach;
+      return $permitir;
     }
+  }
+
+
+
+
+
+  public function handle($request, Closure $next)
+  {
+
+    if (preg_match("/recibos-free/",  $request->path())  > 0)   return $next($request); //dejar pasar 
+
+    if ($request->session()->has('nick')) {
+      if ($request->session()->has('provider')) {
+        $this->obtenerConexion(true);
+        return $next($request); //dejar pasar
+      } else {
+        if ($this->rutas_permitidas_sin_abogado($request)) {
+           return $next($request); //dejar pasar
+        } else
+          return  redirect("session-abogados");
+      }
+    } else {
+
+      if ($this->rutas_permitidas_sin_auth($request))     return $next($request); //dejar pasar
+      else {
+        if (preg_match("/p\//",  $request->path())  > 0) return redirect('signin/p');
+        else   return redirect('signin');
+      }
+    }
+  }
 }
