@@ -16,71 +16,62 @@ use Illuminate\Support\Facades\Route;
 */
  
 
-
-Route::get('denegado', "AsistantController@unauthorized");
-//Autenticacion cliente
-Route::get('cliente/sign-in',   'UserController@sign_in');
-Route::post('cliente/sign-in',   'UserController@sign_in');
-Route::get('cliente/sign-out',   'UserController@sign_out'); 
-//Autenticacion admini
-Route::get('admin/sign-in', "ProveedorController@sign_in");
-Route::post('admin/sign-in', "ProveedorController@sign_in");
-Route::get('admin/sign-out', "ProveedorController@sign_out");
-
-
 /***
  * MODULO ADMINISTRADORES
  * 
- * 
  */
-Route::group(['middleware' => 'proveedor'], function () {
+Route::get('signin/p', "ProveedorController@sign_in");
+Route::post('signin/p', "ProveedorController@sign_in");
+///cerrar sesion
+Route::get('signout/p', "ProveedorController@sign_out");
+Route::get('/p', "ProveedorController@usuarios");
+//Usuarios proveedores
+Route::get('p/usuarios', "ProveedorController@usuarios");
+//NUEVO PROVIDER****************************
+Route::get('p/nuevo-provider', "ProveedorController@cargar");
+Route::post('p/nuevo-provider', "ProveedorController@cargar");
+//ACTUALIZAR DATOS PROVIDER****************************
+Route::get('p/provider/edit/{id}', "ProveedorController@cargar");
+Route::post('p/provider/edit/{id}', "ProveedorController@cargar");
+//Existe usuario provider
+Route::get('p/existe-provider/{nick}/{operacion}', "ProveedorController@nick_existe");
+//borrar provider
+Route::get('p/provider/del/{id}', "ProveedorController@borrar");
+/*******CLIENTE*********** */
+//Lista de cliente
+Route::get('p/clientes', "SuscriptoresController@clientes");   
+Route::get('p/solicitantes', "SuscriptoresController@solicitantes");   
+// Nuevo cliente
+Route::get('/p/nuevo-suscriptor', "SuscriptoresController@nuevo");    
+Route::post('/p/nuevo-suscriptor', "SuscriptoresController@nuevo"); 
+//Actualizar datos suscriptor
+Route::get('p/suscripcion/edit/{id}', "SuscriptoresController@editar");    
+Route::post('p/suscripcion/edit', "SuscriptoresController@editar"); 
  
- 
-Route::get('admin/welcome', "ProveedorController@welcome"); 
-Route::get('admin/providers', "ProveedorController@index");
-Route::get('admin/provider-create', "ProveedorController@create");
-Route::post('admin/provider', "ProveedorController@create"); 
-Route::get('admin/provider-update/{id}', "ProveedorController@update");
-Route::put('admin/provider', "ProveedorController@update"); 
-Route::get('admin/provider/{id}', "ProveedorController@show");  
-Route::delete('admin/delete/{id}', "ProveedorController@borrar");
-
-/*******CLIENTE*********** */  
-Route::get('admin/clientes/index', "SuscriptoresController@clientes");   
-Route::get('admin/clientes/solicitantes', "SuscriptoresController@solicitantes");   
-Route::get('admin/clientes/create', "SuscriptoresController@nuevo");    
-Route::post('admin/clientes/create', "SuscriptoresController@nuevo"); 
-Route::get('admin/clientes/update/{id}', "SuscriptoresController@editar");    
-Route::put('admin/clientes/update', "SuscriptoresController@editar"); 
-Route::get('admin/clientes/{id}', "SuscriptoresController@show");    
-Route::get('admin/clientes/baja/{idcli}', "SuscriptoresController@actualizar_estado_cliente");  
-Route::get('admin/clientes/alta/{idcli}', "SuscriptoresController@actualizar_estado_cliente");  
-Route::get('admin/clientes/delete/{idcli}', "SuscriptoresController@borrar");  
-Route::get('admin/clientes/regenerar-password/{id}', "SuscriptoresController@regenerar_credenciales");  
-Route::get('admin/clientes/pagos/{idcli}', "SuscriptoresController@borrar");  
-Route::post('admin/clientes/pagos', "SuscriptoresController@borrar");  
-/**************TIPOS DE PLAN ********** */
-Route::get('admin/planes', "PlanServicioController@index"); 
-Route::get('admin/planes-create', "PlanServicioController@create"); 
-Route::post('admin/planes', "PlanServicioController@create");
-Route::get('admin/planes-update/{id}', "PlanServicioController@update");
-Route::put('admin/planes', "PlanServicioController@update");
-Route::get('admin/planes/{id}', "PlanServicioController@show");
-Route::delete('admin/planes/{id}', "PlanServicioController@borrar"); 
- 
-
-});
-
-
-
-
-
 //Creacion Secuencial de cliente
 Route::post('paso1_suscriptor', "SuscriptoresController@paso1_suscriptor");
 Route::get('/p/paso2_crearbd/{cliid}', "SuscriptoresController@paso2_crearbd");//manual
 Route::get('/p/paso3_creartablas/{cliid}', "SuscriptoresController@paso3_creartablas");//manual
 Route::get('p/paso4_gen_credenciales/{cliid}', "SuscriptoresController@paso4_gen_credenciales");//auto
-
+//Deshabilitar habilitar cliente
+Route::get('/p/suscriptor/{altabaja}/{idcli}', "SuscriptoresController@actualizar_estado_cliente");  
+//Borrar suscriptor
+Route::get('/p/suscriptor/del/{idcli}', "SuscriptoresController@borrar");  
+ 
+/**************TIPOS DE PLAN ********** */
+Route::get('/p/planes-servicio', "PlanServicioController@index"); 
+Route::get('/p/planes-servicio/nuevo', "PlanServicioController@cargar"); 
+Route::post('/p/planes-servicio/nuevo', "PlanServicioController@cargar");
+Route::get('/p/planes-servicio/{tipo}/{id}', "PlanServicioController@cargar");
+Route::post('/p/planes-servicio/{tipo}', "PlanServicioController@cargar");
+Route::get('/p/planes-servicio-d/{id}', "PlanServicioController@borrar");
+//uso referencial
+Route::get('/listar-planes-servicio', "PlanServicioController@listar");
+//Pagos
+//*********/
+Route::get('p/pagos/{id}', "SuscriptoresController@pagos"); //Listar pagos
+Route::get('p/pago/{id}', "SuscriptoresController@pago"); //Registrar pago
+Route::post('p/pago', "SuscriptoresController@pago"); //Registrar pago
 
 
 /***
@@ -103,7 +94,11 @@ Route::get('usuario-existe/{nick}', "UserController@validar_existencia_usuario")
  * **********************
  * **********************
  *****/
-
+Route::get('/', "WelcomeController@index");//una vez autenticado
+Route::get('denegado', "WelcomeController@unauthorized");
+Route::get('signin',   'UserController@sign_in');
+Route::post('signin',   'UserController@sign_in');
+Route::get('signout',   'UserController@sign_out'); 
 
 
 // C R E A R SESION ABOGADO 

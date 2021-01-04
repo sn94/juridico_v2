@@ -33,6 +33,7 @@ class DemandaController extends Controller
  * *
  * */
     public function demandas(){
+        $this->obtenerConexion();
         $o_de= DB::table("odemanda")->get();
 
         $dts= DB::table("demandas2")
@@ -52,6 +53,7 @@ class DemandaController extends Controller
  */
  
  public function adjuntarSaldosDemanda( $ci){
+    $this->obtenerConexion();
     $judi=new JudicialController();
     $lst= Demanda::where("CI", $ci)->orderBy("IDNRO")->get();
     $n_lst= array();
@@ -68,6 +70,7 @@ class DemandaController extends Controller
 
 
  private function listar_DEMANDAS( $CI){
+    $this->obtenerConexion();
     $lista=  DB::table("demandas2")
     ->join("notificaciones", "notificaciones.IDNRO", "=", "demandas2.IDNRO")
     ->join("demandan", "demandan.IDNRO", "=", "demandas2.DEMANDANTE", "left")
@@ -81,7 +84,7 @@ class DemandaController extends Controller
 
 
  public function demandas_by_ci($ci){
-  
+    $this->obtenerConexion();
     $lista= $this->listar_DEMANDAS( $ci);
        $persona= Demandados::where("ci", $ci)->first();//persona
        $saldos= $this->adjuntarSaldosDemanda($ci);
@@ -95,7 +98,7 @@ class DemandaController extends Controller
 
 
  public function demandas_by_id($ID){
-  
+    $this->obtenerConexion();
     $lista= null;
  
        $persona= Demandados::find( $ID);//persona
@@ -120,11 +123,13 @@ class DemandaController extends Controller
  * FICHA DE DEMANDA SEGUN COD_EMP
  */
     public function ficha_demanda(  $codemp){
+        $this->obtenerConexion();
         $data= DB::table("demandas")->where('cod_emp', $codemp)->first();
         return view("demandas.ficha_demanda", ['ficha'=>   $data] );
     }
 
     public function ficha_de_demanda(  $idnro){
+        $this->obtenerConexion();
         $data= Demanda::find( $idnro);
         $demanObj=  Demandados::where("CI", $data->CI)->first();
         $nom= $demanObj->TITULAR;
@@ -136,6 +141,7 @@ class DemandaController extends Controller
     */
 
     public function show_form_nuevo( $id_d){//Id de demandado
+        $this->obtenerConexion();
         $qu= Demandados::find( $id_d);
         if( is_null( $qu) ){  echo "Código inválido";
         }else{
@@ -147,6 +153,7 @@ class DemandaController extends Controller
      
 
     private function formar_parametros(){//parametros basicos
+        $this->obtenerConexion();
         $origen= DB::table("odemanda")->get();//Origen de demanda
         $demandantes= DB::table("demandan")->get();//Demandantes
         $actuarias= DB::table("actuaria")->get();//Actuarias
@@ -165,7 +172,7 @@ class DemandaController extends Controller
 
     public function nueva_demandan(Request $request, $DEMANDADO=0){//idd id_demandado
          
-        
+        $this->obtenerConexion();
         if(  $request->isMethod("POST"))  {
             
             //Quitar el campo _token
@@ -213,7 +220,7 @@ class DemandaController extends Controller
     
     public function editar_demandan(Request $request, $iddeman=0, $tab=1){//idd id_demanda
        
-
+        $this->obtenerConexion();
            //instancia de demanda
            $obdema= NULL;
            if($iddeman==0) {$iddeman= $request->input("IDNRO"); }
@@ -270,6 +277,7 @@ class DemandaController extends Controller
 
         //Solo devuelve el formulario de demandas (en AJAX)
     public function editar_demanda_form(  $iddeman=0){//idd id_demanda
+        $this->obtenerConexion();
         //instancia de demanda
         $obdema= NULL;
         if($iddeman==0) {$iddeman= request()->input("IDNRO"); }
@@ -290,6 +298,7 @@ class DemandaController extends Controller
 
 
     public function contraparte(Request $request, $iddeman=""){
+        $this->obtenerConexion();
         $id_demanda= $iddeman =="" ?  $request->input("IDNRO") : $iddeman;
        $contra=  Contraparte::find( $id_demanda);
        //Si no existe
@@ -303,6 +312,7 @@ class DemandaController extends Controller
         
 
     public function honorarios(Request $request, $iddeman=""){
+        $this->obtenerConexion();
         $id_demanda= $iddeman =="" ?  $request->input("IDNRO") : $iddeman;
        $ho= Honorarios::find( $id_demanda);
        $ho->fill(   $request->input() );
@@ -314,6 +324,7 @@ class DemandaController extends Controller
 
 
     public function ver_demandan(Request $request, $iddeman=0, $tab=1){//idd id_demanda
+        $this->obtenerConexion();
         $origen= DB::table("odemanda")->get();
 
         //instancia de demanda 
@@ -341,7 +352,7 @@ class DemandaController extends Controller
  
  
 public function borrar($iddeman){
-
+    $this->obtenerConexion();
     DB::beginTransaction();
     try {
         //Borrar demandas notificaciones y observacion asociada al CI Nro

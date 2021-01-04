@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Bancos;
-use App\Demanda;
-use App\Demandados;
+
 use App\Helpers\Helper;
-use App\Http\Controllers\Controller;
-use App\Mail\AuthAlert;
+use App\Http\Controllers\Controller; 
 use App\Mail\CredencialesCliente;
 use App\ODemanda;
 use App\PagosServicio;
@@ -15,9 +12,7 @@ use App\Plan_servicio;
 use App\Suscriptores;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;    
-use App\Usu_proveedor;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;   
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -44,13 +39,13 @@ public function clientes(){
     ->paginate( 10);
     
     if(  request()->ajax() )
-     return view("0provider.suscriptor.grilla", ['clientes'=> $ls ]) ;
+     return view("modulo_admin.suscriptor.grilla", ['clientes'=> $ls ]) ;
     else
     {
         //Obtener numero de solicitantes
         $numSolici=   Suscriptores::where("APROBADO", "N")->count();
 
-        return view('0provider.suscriptor.index' , ["clientes"=>  $ls,  "numero_solicitantes"=>  $numSolici ]);
+        return view('modulo_admin.suscriptor.index' , ["clientes"=>  $ls,  "numero_solicitantes"=>  $numSolici ]);
     }
 }
 
@@ -59,9 +54,9 @@ public function clientes(){
 public function solicitantes(){
     $ls=    Suscriptores::where("APROBADO", "N")->paginate(10);
     if(  request()->ajax() )
-     return view("0provider.suscriptor.grilla_solicitudes", ['clientes'=> $ls ]) ;
+     return view("modulo_admin.suscriptor.grilla_solicitudes", ['clientes'=> $ls ]) ;
     else
-    return view('0provider.suscriptor.solicitudes' , ["clientes"=>  $ls]);
+    return view('modulo_admin.suscriptor.solicitudes' , ["clientes"=>  $ls]);
 }
 
  
@@ -79,12 +74,12 @@ public function solicitantes(){
          $id_cliente= $this->paso1_suscriptor(  true );
          $this->paso2_crearbd( $id_cliente );
          $this->paso3_creartablas($id_cliente, true);
-         $this->paso4_gen_credenciales($id_cliente, true);
+         $this->regenerar_credenciales($id_cliente, true);
          DB::commit();
 
         }catch( Exception $e){     DB::rollBack();      }
 
-    }else{     return view('0provider.suscriptor.create' );  }
+    }else{     return view('modulo_admin.suscriptor.create' );  }
    
  }
 
@@ -107,44 +102,12 @@ public function solicitantes(){
     }else{  
         $cli=  Suscriptores::find(  $id );
         $Plan_servicio= Plan_servicio::get();
-        return view('0provider.suscriptor.editar', 
+        return view('modulo_admin.suscriptor.editar', 
          ['dato'=>  $cli,  'planes'=> $Plan_servicio, 'ocultar_btn_ver_plan'=> true ] );  }
    
  }
 
-
- public function paso1_suscriptor(  $interno = false){
-    set_time_limit(0);
-    ini_set('memory_limit', '-1');
-
-     $DATOS= request()->input();
-       //Registrar cliente
-       $suscr= new Suscriptores();
-       $suscr->fill(   $DATOS);
-       if( $suscr->save() )
-      { 
-          if( $interno) return $suscr->IDNRO;
-          else{
-            if( request()->ajax())
-            return response()->json( ['idnro'=>   $suscr->IDNRO] ); 
-            else 
-            return view("0provider.suscriptor.registrado");
-          }
-         
-        }
-       else
-       {
-        if( $interno) return "error";
-        else{
-            if( request()->ajax())
-            return response()->json(['error'=>  "Error en el servidor"] );
-            else 
-            echo "Ha ocurrido un error inesperado en el Servidor. Estamos trabajando en ello. Disculpe las molestias";
-        }
-      
-  }
- }
-
+ 
 
  public function paso2_crearbd( $clienteId, $interno= false){
     set_time_limit(0);
@@ -176,29 +139,11 @@ public function solicitantes(){
  }
 
 
- public function paso3_creartablas(  $clienteId, $interno= false){
-    set_time_limit(0);
-    ini_set('memory_limit', '-1');
-    $NombreBD=  "cli_". $clienteId;
-    $comandoR= "mysql -h localhost -u  supervisor -p123 $NombreBD < juridico_v2.sql 2>&1";
-    $salida= shell_exec( $comandoR );
-    if(  $salida==""   ||  is_null($salida))
-    {
-        if( $interno) return "ok";
-        else
-        return response()->json(  ['ok'=>"Tablas creadas"] );
-    }
-    else
-    {
-        if( $interno) return "error";
-        else
-        return response()->json(['error'=>  "Error en el servidor"] );
-    }
-}
+  
 
 
 
-public function  paso4_gen_credenciales( $idcliente,  $interno= false, $email= ""){
+public function  regenerar_credenciales( $idcliente,  $interno= false, $email= ""){
     set_time_limit(0);
     ini_set('memory_limit', '-1');
 
@@ -246,7 +191,7 @@ public function  paso4_gen_credenciales( $idcliente,  $interno= false, $email= "
                 Mail::to([ $client_email]) 
                 //->queue(   new AuthAlert(  $usr,  ["Suscriptores-agent"=>$SuscriptoresAgent, "ip"=>$Ip] ) );
             ->send(  new CredencialesCliente(  $nickgen, $rawpass  ) );
-            }catch( Exception $e){}
+            }catch( Exception $e){  }
 
             if( $interno) return true;
             else
@@ -266,23 +211,7 @@ public function  paso4_gen_credenciales( $idcliente,  $interno= false, $email= "
  
     
     
-    private function obtenerConexion(   $systemid){
-     
-        $DataBaseName= "cli_".$systemid;
-        
-        $configDb = array(
-            'driver' => 'mysql',
-            'host' => 'localhost',
-            'database' =>  $DataBaseName,
-            'username' =>   env('DB_USERNAME'),
-            'password' =>   env('DB_PASSWORD'),
-            'charset' => 'utf8',
-            'prefix' => '',
-        );
-        Config::set('database.connections.mysql', $configDb);
-       //$conexionSQL = DB::connection('mysql');
-       return $systemid;
-    }
+    
 
 
 public function actualizar_estado_cliente( $modo,  $idcliente){
@@ -312,7 +241,7 @@ public function actualizar_estado_cliente( $modo,  $idcliente){
         try{
            // $conexTest->select("select curdate()");//verificar si existe base de datos
 
-                $sent_email= $this->paso4_gen_credenciales($idcliente, true, $susc_email); //db clientes
+                $sent_email= $this->regenerar_credenciales($idcliente, true, $susc_email); //db clientes
                 if( is_bool( $sent_email)  &&  $sent_email) {  
 
                     $db_clientes_juridico->table("suscriptores")->where("IDNRO", $idcliente)
@@ -360,7 +289,7 @@ public function borrar( $id){
 
     //listar planes servicio
     $Plan_servicio= Plan_servicio::get();
-     return view("0provider.suscriptor.solicitud", ['planes'=>  $Plan_servicio ]);
+     return view("modulo_admin.suscriptor.solicitud", ['planes'=>  $Plan_servicio ]);
  }
 
 
@@ -377,9 +306,9 @@ public function borrar( $id){
     $suscr= Suscriptores::find( $idcliente);
     $razon_social=  $suscr->RAZON_SOCIAL;
     if(  request()->ajax())
-    return view("0provider.suscriptor.pagos_grilla", [  'pagos'=>  $pagos ]);
+    return view("modulo_admin.suscriptor.pagos_grilla", [  'pagos'=>  $pagos ]);
     else
-    return view("0provider.suscriptor.pagos", [ 'IDCLIENTE'=>$idcliente, 'RAZONSOCIAL'=> $razon_social,  'pagos'=>  $pagos ]);
+    return view("modulo_admin.suscriptor.pagos", [ 'IDCLIENTE'=>$idcliente, 'RAZONSOCIAL'=> $razon_social,  'pagos'=>  $pagos ]);
  
 
 }
@@ -416,7 +345,7 @@ public function borrar( $id){
 
 
     }else{
-        return view("0provider.suscriptor.pago", [ 'IDCLIENTE'=>$idcliente]);
+        return view("modulo_admin.suscriptor.pago", [ 'IDCLIENTE'=>$idcliente]);
     }
     
  }

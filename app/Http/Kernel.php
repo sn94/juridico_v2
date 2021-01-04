@@ -6,6 +6,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AdminOperadorMiddleware;
 use App\Http\Middleware\CheckAuth;
 use App\Http\Middleware\OperadorMiddleware;
+use App\Http\Middleware\ProveedorMiddleware;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -51,7 +52,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            CheckAuth::class
+         //   CheckAuth::class
         ],
 
         'api' => [
@@ -68,6 +69,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'proveedor'=> ProveedorMiddleware::class,
         'superadmin'=> \App\Http\Middleware\SuperadminMiddleware::class,
         'admin'=> \App\Http\Middleware\AdminMiddleware::class,
         'operador'=> OperadorMiddleware::class,

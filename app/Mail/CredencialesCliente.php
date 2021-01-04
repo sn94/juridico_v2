@@ -43,8 +43,8 @@ class CredencialesCliente extends Mailable
      */
     public function build()
     {
-        return  $this->subject(  $this->titulo )->from('info@clientez.com')
-                ->view('0provider.mailcredencial',  
+        return  $this->subject(  $this->titulo )->from('legalex@clientez.com')
+                ->view('modulo_admin.mailcredencial',  
                  [ 'nick'=> $this->Nick, 'password'=> $this->Password, 'pin'=> $this->pin_acceso,
                   "timestamp"=> $this->Timestamp  ]);
        // return $this->view('view.name');

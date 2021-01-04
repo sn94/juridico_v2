@@ -28,6 +28,7 @@ class DatosPersoController extends Controller
  * AGREGAR
  */
     public function index( Request $request, $argumento=""){
+      $this->obtenerConexion();
         /*
           select  demandado.*, count(demandas2.CI) as nro from `demandado` inner join `demandas2`
            on `demandas2`.`CI` = `demandado`.`CI` where  demandado.CI LIKE '%p%' or  TITULAR LIKE '%p%' or 
@@ -63,6 +64,7 @@ class DatosPersoController extends Controller
 
 
     public function index_garantes( Request $request, $argumento=""){
+      $this->obtenerConexion();
       /*
         select  demandado.*, count(demandas2.CI) as nro from `demandado` inner join `demandas2`
          on `demandas2`.`CI` = `demandado`.`CI` where  demandado.CI LIKE '%p%' or  TITULAR LIKE '%p%' or 
@@ -98,12 +100,14 @@ class DatosPersoController extends Controller
  
 /**  FICHA DE DATOS PERSONALES  **/
     public function view(  $ci){
+      $this->obtenerConexion();
         $data= DB::table("demandado")->where('CI', $ci)->first();
         return view("demandado.view", ['ficha'=>   $data] );
     }
 
   /**VERIFICAR SI EXISTE UN CI */
   public function existe(  $ci){
+    $this->obtenerConexion();
       $data= DB::table("demandado")->where('CI', $ci)->first();
       $ex= is_null($data) ? "n": "s";
       echo json_encode( array("existe"=>  $ex) );
@@ -114,6 +118,7 @@ class DatosPersoController extends Controller
     NUEVA DEMANDADO
     */
     public function nuevo(Request $request){
+      $this->obtenerConexion();
         if(  $request->isMethod("POST") )  {
             //Quitar el campo _token
             $Params=  $request->input(); 
@@ -150,7 +155,7 @@ class DatosPersoController extends Controller
   * EDITAR
   */
   public function editar(Request $request, $idnro=0){//idnro es CEDULA
-    
+    $this->obtenerConexion();
     //Demandados::find( $idnro );
     if( $request->isMethod("POST"))  {
         //Quitar el campo _token
@@ -177,7 +182,7 @@ class DatosPersoController extends Controller
 
 
 public function borrar($ci){ //En realidad se recibiria el IDNRO
-
+  $this->obtenerConexion();
   if(session("tipo")=="S" || session("tipo")=="SA"){
     $demandado= Demandados::find( $ci);
     $demanda= Demanda::where("CI", $demandado->CI)->first();

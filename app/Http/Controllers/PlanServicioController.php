@@ -22,61 +22,75 @@ class PlanServicioController extends Controller
     {
         date_default_timezone_set("America/Asuncion");
     }
-  
-    public function index(){
-        $dato= Plan_servicio::orderBy('IDNRO', 'desc')->paginate(20); 
-       if ( request()->ajax() )
-       return view("0provider.planes.grilla", ['lista'=>   $dato] );
-       else
-      { $dato= Plan_servicio::orderBy('IDNRO', 'desc')->paginate(20); 
-       return view("0provider.planes.index",
-        ["lista"=>  $dato,  "url_agregar"=> url("p/planes-servicio/nuevo"), 
-        "ruta_listado"=> url("p/planes-servicio"),  "breadcrumbcolor"=>"#fdc673 !important;"] );}
-       
+
+    public function index()
+    {
+        $dato = Plan_servicio::orderBy('IDNRO', 'desc')->paginate(20);
+        if (request()->ajax()) {
+            $dato = Plan_servicio::orderBy('IDNRO', 'desc')->paginate(20);
+            return view("modulo_admin.planes.grilla", ['lista' =>   $dato]);
+        } else {
+            $dato = Plan_servicio::orderBy('IDNRO', 'desc')->paginate(20);
+            return view(
+                    "modulo_admin.planes.index",
+                    ["lista" =>  $dato]
+                );
+        }
     }
 
 
+ 
 
+    public function create(Request $request)
+    {
 
-    public function  listar(){
-        $dato= Plan_servicio::orderBy('IDNRO', 'desc')->get();
-        return response()->json(  $dato);
+        if ($request->isMethod("POST")) {
+            $cod_gasto  = new Plan_servicio();
+
+            //avanzar
+            $datoReci = $request->input();
+            $datoReci['PRECIO'] =  Helper::cleanNumber($datoReci['PRECIO']);
+            $cod_gasto->fill($datoReci);
+            $cod_gasto->save();
+            return response()->json(  array("ok" =>   "SE HA CREADO UN PLAN") ) ;
+        } else {
+            return view("modulo_admin.planes.create");
+        }
     }
 
-    public function cargar(Request $request, $ope= "A", $id=""){
+     
+
+
+    
+    public function update(Request $request,$id=""){
         
-        if(  $request->isMethod("POST")  ){
-            $cod_gasto=null;
-            if( $ope == "A"){   $cod_gasto= new Plan_servicio();    }  
-            if( $ope == "M"){
-                //cASO EDICION
-                $cod_gasto=Plan_servicio::find(  $request->input("IDNRO" )  );
-            }//FIN EDICION    
-
+        if(  $request->isMethod("PUT")  ){
+            $cod_gasto= Plan_servicio::find(  $request->input("IDNRO" )  );
                  //avanzar
                  $datoReci= $request->input();
                  $datoReci['PRECIO']=  Helper::cleanNumber(   $datoReci['PRECIO'] ) ;
                  $cod_gasto->fill( $datoReci );
                  $cod_gasto->save();
-                 echo json_encode( array("ok"=> $ope=="A" ? "SE HA CREADO UN PLAN" :  "DATOS DE PLAN EDITADO" )  );
-          
-
+                 return response()->json( array("ok"=>  "DATOS DE PLAN EDITADO" ) );
         }else{
-            //Preparar parametros 
-            $ruta=   $ope == "A" ? url("p/planes-servicio/nuevo")  :  url("p/planes-servicio/M");
-            if( $ope == "A")    
-            return view("0provider.planes.form",  
-             ['OPERACION'=> $ope,   'RUTA'=> $ruta ]);
-            if( $ope == "M") {
+             
                 $cod_gasto= Plan_servicio::find( $id);
-                return view("0provider.planes.form", 
-                  ['OPERACION'=> $ope,   'RUTA'=> $ruta,  'DATO'=>$cod_gasto ]);
-            }
+                return view("modulo_admin.planes.update", 
+                  [   'DATO'=>$cod_gasto ]);
+            
         }
     }
 
-     
-    
+
+    public function show($idnro){
+        $plan=  Plan_servicio::find($idnro);
+        if(  is_null(  $plan))
+        return response()->json(  ['error'=>  "No existe el ID $idnro" ] );
+        else  return response()->json(  ['ok'=>   $plan ] ); 
+    }
+
+
+
 
     public function borrar($idnro){
         if( Plan_servicio::find($idnro)->delete())

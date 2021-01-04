@@ -30,10 +30,7 @@ class UserController extends Controller
     {
         date_default_timezone_set("America/Asuncion");
     }
-   
-// echo $request->session()->get('nick');
-    
-
+ 
 public function index(){
 
         
@@ -296,48 +293,54 @@ public function obtener_id_abogado_asoc(  $idu){
     } return  [];
 }
 
-public function sign_in( Request $request){
-     
-    
-   // ** End config */
 
-     if(  is_null( $request->input("nick") ) ){//SI no hay parametros
-        //MOSTRAR FORM
-      
-        return view("auth.login");
 
+/**
+ * Autenticacion
+ * 
+ * 
+ * 
+ */
+public function sign_in_existe_usuario( $usr){
+    try{
+        $d_u= User::where("nick", $usr)->first(); return  $d_u;
+    }catch( Exception $ex) {
+        return NULL;
+    }
+}
+public function sign_in_servicio_habili( $systemid  ){
+    $habilitado=  $this->sistema_habilitado( $systemid , true);
+    if(  $habilitado != "")
+    return response()->json(["error" =>  $habilitado]); 
+    else return NULL;
+}
+
+public function sign_in( Request $request){ 
+
+     if(    $request->isMethod("GET") ){ return view("auth.login");
      }else{
             //DATOS DE SESIOn
-            $usr= $request->input("nick");
+            $usr = $request->input("nick");
             //Identificar el sistema al cual pertenece /Extraer Id Crear conexion pertinente
-            
-            $systemid= $this->obtenerConexion(  $usr);
+            $systemid = $this->obtenerConexion($usr);
+
+            //Check 1 Existe usuario
+            $d_u = $this->sign_in_existe_usuario($usr);
+            if (is_null($d_u))
+                return response()->json(["error" =>  "Usted no está registrado!!"]);
+
+            //Check 2 Servicio habilitado
+             $servicio_habi= $this->sign_in_servicio_habili( $systemid );
+             if( !is_null( $servicio_habi ) )  return $servicio_habi;
+              
+            $id_usr=$d_u->IDNRO;            //IDNRO
+            $nom= $d_u->nick;               //NICK  
+            $pass= $request->input("pass"); //PASS
+            $tipo= $d_u->tipo;              //TIPO
+
+            //Check 3 Password correcta
+            if( ! $this->correctPassword( $pass, $usr) ) return response()->json(["error" =>  "Clave incorrecta"]); 
  
-            //OBTENER NRO REG DE USUARIO a partir de su NICK
-            $d_u= null;
-            try{
-                $d_u= User::where("nick", $usr)->first();
-            }catch( Exception $ex) {
-                return response()->json( ["error"=>  "Usted no está registrado!!"]);
-            }
-            //USUARIO PERTENECE A UNA CUENTA HABILITADA? 
-            $habilitado=  $this->sistema_habilitado( $systemid , true);
-            if(  $habilitado != "")
-            return view("auth.login",  [ "errorSesion"=>   $habilitado ]  ); 
-            
-            $systemid= $this->obtenerConexion(  $usr);
-
-            //VERIFICAR EXISTENCIA DE USUARIO
-            if( is_null( $d_u) ){//no existe
-                return view("auth.login", array( "nick"=> $usr,   "errorSesion"=> "El usuario ->$usr<- no existe") );
-            }else{
-                $id_usr=$d_u->IDNRO; 
-                $nom= $d_u->nick; 
-                $pass= $request->input("pass");
-                $tipo= $d_u->tipo; 
-
-                // VERIFICACION DE contrasenha correcta
-                if( $this->correctPassword( $pass, $usr) ){
 
 
                     $SesionDatos = array( 	'id' => $id_usr, 'nick'  => $usr, 'tipo' => $tipo, 'system'=> $systemid);
@@ -380,11 +383,8 @@ public function sign_in( Request $request){
                     else
                         return redirect(url("/"));
                         
-                }else{
-                //	echo json_encode(  array('error' => "Clave incorrecta" )); 
-                    return view("auth.login", array("errorSesion"=> "Clave incorrecta") );
-                }
-            }//end else
+                 
+             
             
      }//END ANALISIS DE PARAMETROS
 }//END SIGN IN
@@ -423,7 +423,9 @@ public function reset_password(){
 }
 //Generar el link de recuperacion
 public function recovery_password(  $token=""){
-
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+   
     if(  request()->isMethod("POST")){
         try{
             $nick_rec= request()->input("NICK");
@@ -458,7 +460,7 @@ public function recovery_password(  $token=""){
                             Mail::to([ $MailControl]) 
                             //->queue(   new AuthAlert(  $usr,  ["user-agent"=>$UserAgent, "ip"=>$Ip] ) );
                         ->send(  new PasswordRecovery( $nuevoLink ) );
-                        }catch( Exception $e){}
+                        }catch( Exception $e){  echo  $e; }
                     }//end empty email control
                 /************* */
                 return view("auth.passwrecovery_done", ['EMAIL'=> $MailControl]);

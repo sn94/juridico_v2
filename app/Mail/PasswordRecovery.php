@@ -35,7 +35,7 @@ class PasswordRecovery extends Mailable
      */
     public function build()
     {
-        return  $this->subject('RECUPERACIÓN DE CONTRASEÑA')->from('info@clientez.com')
+        return  $this->subject('RECUPERACIÓN DE CONTRASEÑA')->from(  env("MAIL_FROM_ADDRESS"))
                 ->view('auth.passwrecovery',  
                  [ 
                     "recovery_link"=> $this->recovery_link,

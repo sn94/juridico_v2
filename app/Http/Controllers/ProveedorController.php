@@ -24,104 +24,125 @@ class ProveedorController extends Controller
     {
         date_default_timezone_set("America/Asuncion");
     }
-  
-
-
- 
 
 
 
-public function usuarios(){
-    $us=  Usu_proveedor::paginate(10  );
-    if(  request()->ajax())
-    return view('0provider.usuario.grilla' , ['usuarios'=>   $us]);
-    else
-    return view('0provider.usuario.index' , ['usuarios'=>   $us]);
-}
 
 
-public function nick_existe( $nick, $operacion ){
- 
-   $res=  Usu_proveedor::where("NICK",  $nick)->first();
-   if( is_null(  $res) ) return response()->json( ['NO' =>  'Nick disponible']);
-   else{
 
-    $usutemp= Usu_proveedor::find(  $res->IDNRO); 
-    $nick_en_bd=   $usutemp->NICK; 
-    if( $operacion== "M"  &&   $nick_en_bd ==   $nick ) return response()->json( ['NO' =>  'Nick disponible']);
-    else return response()->json( ['SI' =>  'Nick ya disponible']);
 
+    public function welcome(Request $request)
+    {
+        $this->defaultConexion();
+        return view("modulo_admin.index");
     }
-}
-    
+
+
+
+    public function index()
+    {
+        $us =  Usu_proveedor::paginate(10);
+        if (request()->ajax())
+        return view('modulo_admin.usuario.grilla', ['usuarios' =>   $us]);
+        else
+        return view('modulo_admin.usuario.index', ['usuarios' =>   $us]);
+    }
+
+
+  
  
 
    
  
+    public function nick_redundante($nick, $operacion)
+    {
+        $res =  Usu_proveedor::where("NICK",  $nick)->first();
+        if (is_null($res)) return false;
+        else {
+
+            $usutemp = Usu_proveedor::find($res->IDNRO);
+            $nick_en_bd =   $usutemp->NICK;
+            if ($operacion == "M"  &&   $nick_en_bd ==   $nick) return false;
+            else return true;
+        }
+    }
 
 
-public function cargar( Request $request, $id=0){
-    if(   $request->isMethod("POST"))  {//hay datos 
-        //Quitar el campo _token
-        $Params=  $request->input(); 
-        //Devuelve todo elemento de Params que no este presente en el segundo argumento
-       
-            //hashing
-        if( array_key_exists("PASS",   $Params) )
-        $Params['PASS']= Hash::make($request->PASS);
 
-      
+    private function cargar()
+    {
+        $request =  request();
+        $Params =  $request->input();
+        //hashing
+        if (array_key_exists("PASS",   $Params))
+        $Params['PASS'] = Hash::make($request->PASS);
+        DB::beginTransaction();
+        try {
 
-
-         DB::beginTransaction();
-        try{
-            
-            $r= null;
-            if(  $id == 0)  $r= new Usu_proveedor();
-            else   $r= Usu_proveedor::find( $request->input("IDNRO") ); 
-
-             $r->fill(  $Params  );  
-             $r->save();
-             echo json_encode( array('idnro'=>  $r->IDNRO  ));    
+            $r = null;
+            if (array_key_exists("IDNRO",  $Params))   $r = Usu_proveedor::find($Params['IDNRO']); //editar
+            else  $r = new Usu_proveedor(); //actualizar
+            $r->fill($Params);
+            $r->save();
             DB::commit();
-       
+            return response()->json(['idnro' =>  $r->IDNRO]);
         } catch (\Exception $e) {
             DB::rollback();
-            echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
-        }   
+            return response()->json(array('error' => "Hubo un error al guardar uno de los datos<br>$e"));
+        }
     }
-    else  {   
-        if( $id == 0)
-        {
-            if( request()->ajax())
-            return view("0provider.usuario.form");
-            else 
-           { $us= Usu_proveedor::paginate(10);
-            return view('0provider.usuario.create' , ['usuarios'=> $us]);
-            }  
+
+
+
+    public function create(Request $request)
+    {
+        if ($request->isMethod("POST")) { //hay datos 
+            //Redundacia de nick
+            $Params =  $request->input();
+            if ($this->nick_redundante($Params['NICK'],  "A"))
+            return response()->json(['error' => "Nick ya está siendo utilizado"]);
+            return $this->cargar();
+        } else {
+            if (request()->ajax())  return view("modulo_admin.usuario.form");
+            else {
+                $us = Usu_proveedor::paginate(10);
+                return view('modulo_admin.usuario.create', ['usuarios' => $us]);
+            }
         }
-        else{
-            $dato= Usu_proveedor::find( $id );
-            if( request()->ajax())
-            return view("0provider.usuario.form",  [ "IDNRO"=> $id, "DATO"=> $dato , "OPERACION"=>"M"]);
-            else 
-           { $us= Usu_proveedor::paginate(10);
-            return view('0provider.usuario.create' , ['usuarios'=> $us]);
-            }  
-            
+    }
+
+    public function update(Request $request, $id = 0)
+    {
+        if ($request->isMethod("PUT")) { //hay datos 
+            //Redundacia de nick
+            $Params =  $request->input();
+            if ($this->nick_redundante($Params['NICK'],  "M"))
+            return response()->json(['error' => "Nick ya está siendo utilizado"]);
+            return $this->cargar();
+        } else {
+            $dato = Usu_proveedor::find($id);
+            if (request()->ajax())
+                return view("modulo_admin.usuario.form",  ["IDNRO" => $id, "DATO" => $dato, "OPERACION" => "M"]);
+            else {
+                $us = Usu_proveedor::paginate(10);
+                return view('modulo_admin.usuario.update', ['usuarios' => $us,  'OPERACION'=>"M"]);
+            }
         }
-       
-     }   
- }
+    }
 
 
-public function borrar( $id){
-   if(  Usu_proveedor::find($id)->delete() )  
-   return response()->json(  array('ok'=>  "BORRADO"  ) );
-   else  return response()->json( array( 'error'=> "Hubo un error al guardar uno de los datos") );
 
 
-}
+    public function borrar($id)
+    {
+        if (is_null(Usu_proveedor::find($id)))
+        return response()->json(["error" => "El usuario ID $id no existe "]);
+        else {
+            if (Usu_proveedor::find($id)->delete())
+            return response()->json(array('ok' =>  "BORRADO"));
+            else  return response()->json(array('error' => "Hubo un error al guardar uno de los datos"));
+        }
+    }
 
 
 
@@ -138,55 +159,51 @@ public function borrar( $id){
  */
 
 
+ private function existeUsuario(){
+    $usr= request()->input("NICK");
+    $d_u= Usu_proveedor::where("NICK", $usr)->first(); 
+   return ! is_null( $d_u);
+ }
  
-public function sign_in( Request $request){
-     
-    /*Conexion Dinamica a la base de datos *
-    $configDb = array(
-        'driver' => 'mysql',
-        'host' => 'localhost',
-        'database' => 'prestasys',
-        'username' => 'root',
-        'password' => '',
-        'charset' => 'utf8',
-        'prefix' => '',
-    );
-    Config::set('database.connections.mysql.', "");
-    $conexionSQL = DB::connection('mysql');
-    dd(  $conexionSQL->select("select * from deudor"));
-    /*** End config */
+private function correctPassword( $entrada, $nick){
+    $hashedPassword=Usu_proveedor::where("NICK", $nick)->first()->PASS; 
+    return Hash::check( $entrada, $hashedPassword);
+   
+}
 
-     if(  is_null( $request->input("NICK") ) ){//SI no hay parametros
-        //MOSTRAR FORM
-     
-        return view("0provider.login");
+    public function sign_in(Request $request)
+    {
 
-     }else{
+
+        if ($request->isMethod("GET")) {
+            return view("modulo_admin.usuario/login");
+        } else {
             //DATOS DE SESIOn
-            $usr= $request->input("NICK");
+            $usr = $request->input("NICK");
             //OBTENER NRO REG DE USUARIO a partir de su NICK
-            $d_u= Usu_proveedor::where("NICK", $usr)->first();
-            
+            $d_u = Usu_proveedor::where("NICK", $usr)->first();
+
             //VERIFICAR EXISTENCIA DE USUARIO
-            if( is_null( $d_u) ){//no existe
-                return view("0provider.login", array("errorSesion"=> "El usuario ->$usr<- no existe") );
-            }else{
-                $id_usr=$d_u->IDNRO; 
-                $nom= $d_u->NICK; 
-                $pass= $request->input("PASS");
-                $tipo= $d_u->tipo; 
+            if (!$this->existeUsuario()) //no existe
+                return response()->json(array("error" => "El usuario ->$usr<- no existe"));
 
-                // VERIFICACION DE contrasenha correcta
-                if( $this->correctPassword( $pass, $usr) ){
-                    $SesionDatos =
-                     array( 	'id' => $id_usr, 'nick'  => $usr, 'provider' => true );
-                    // Via a request instance... 
-                    session( $SesionDatos); 
+            $id_usr = $d_u->IDNRO;  //nick
+            $pass = $request->input("PASS"); //pass
 
-                    //Notificar inicio de sesion
-                    //valente.py@hotmail.com
-                   // explode(',', env('ADMIN_EMAILS'));
-                  /* $UserAgent= $request->header('User-Agent') ;
+            // VERIFICACION DE contrasenha correcta
+            if (!$this->correctPassword($pass, $usr))
+                return response()->json(['error' => 'password incorrecta']);
+
+            //Crear la sesion
+            $SesionDatos =
+                array('id' => $id_usr, 'nick'  => $usr, 'provider' => true);
+            // Via a request instance... 
+            session($SesionDatos);
+
+            //Notificar inicio de sesion
+            //valente.py@hotmail.com
+            // explode(',', env('ADMIN_EMAILS'));
+            /* $UserAgent= $request->header('User-Agent') ;
                    $Ip= $request->ip(); 
                    $MailControl= Parametros::first()->EMAIL;
                   try{
@@ -196,27 +213,18 @@ public function sign_in( Request $request){
                   }catch( Exception $e){}
                   /**Fin Envio de email */
 
-                return redirect(  url("/p") ); 
-                }else{
-                //	echo json_encode(  array('error' => "Clave incorrecta" )); 
-                    return view("0provider.login", array("errorSesion"=> "Clave incorrecta") );
-                }
-            }//end else
-            
-     }//END ANALISIS DE PARAMETROS
-}//END SIGN IN
+            return response()->json(['ok' => 'Autenticado']);
+           // return redirect(url("/admin/welcome"));
+        } //END ANALISIS DE PARAMETROS
+    }//END SIGN IN
 
 
-private function correctPassword( $entrada, $nick){
-    $hashedPassword=Usu_proveedor::where("NICK", $nick)->first()->PASS; 
-    return Hash::check( $entrada, $hashedPassword);
-   
-}
+
  
 
 public function sign_out(){
     session()->flush(); 
-    return redirect(    url("signin/p")   ); 
+    return redirect(    url("admin/sign-in")   ); 
 }
 
  

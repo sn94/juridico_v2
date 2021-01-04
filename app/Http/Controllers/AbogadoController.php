@@ -160,36 +160,15 @@ class AbogadoController extends Controller
                  
                  $usu_rela=  User::where("ABOGADO", $id_aboga)->first();
                  if( is_null($usu_rela)){
-                     $usu_rela= new User();
-                     $usu_rela->nick= $future_nick;
-                     $usu_rela->tipo="S";
-                     $usu_rela->pass= Hash::make( $raw_pass) ;
-                     $usu_rela->email= $r->EMAIL;
-                     $usu_rela->ABOGADO=  $r->IDNRO;
-                     $usu_rela->save();
-                        //Creacion de usuario
-                        $correo_ob= new Correo();
-                        $correo_ob->setTitulo("Credenciales de acceso al Sistema de Juicios");
-                        $correo_ob->setDestinatario( $r->EMAIL);
-                        $correo_ob->setMensaje( "Usuario: $future_nick <br>Password: $raw_pass <br>Recuerde que puede cambiar su nick y contraseña cuando lo desee" );
-                        $genemail= new GenericMail( $correo_ob );
-                        $this->enviar_email_credencial(   $r->EMAIL,  $genemail );
-                   // $this->enviar_email_credencial( $r->EMAIL, $future_nick, $raw_pass, $raw_pin_third_party);
-                   
-                     
+                    $params= ['nick'=> $future_nick, 'tipo'=>"S", 'pass'=> Hash::make( $raw_pass) , 'rawpass'=> $raw_pass,
+                     'email'=>$r->EMAIL,'ABOGADO'=>$r->IDNRO  ];
+                     $this->nuevo_usuario_abogado(  $params ); //crea un usuario para el abogado y le notifica por email
                 }else{
-                    $tempoemail=  $usu_rela->email;
+                    $tempoemail=  $usu_rela->email;//OLD MAIL
                     //ACTUALIZAR EMAIL SI HA CAMBIADO
                     if(  $usu_rela->email != $r->EMAIL   )
-                    {
-                        $usu_rela->email=  $r->EMAIL;
-                        $usu_rela->save();
-                        $correo_ob= new Correo();
-                        $correo_ob->setTitulo("Dirección de correo electrónico actualizada");
-                        $correo_ob->setDestinatario( $r->EMAIL);
-                        $correo_ob->setMensaje( "Recientemente a cambiado su email de referencia, de $tempoemail a $r->EMAIL " );
-                        $genemail= new GenericMail( $correo_ob );
-                        $this->enviar_email_credencial(   $r->EMAIL,  $genemail );
+                    { 
+                        $this->email_actualizado(  $tempoemail, $r->EMAIL,  $usu_rela->IDNRO); //old mail  new mail
                     }
                 } 
 
@@ -228,9 +207,52 @@ class AbogadoController extends Controller
      }
 
 
+     private function nuevo_usuario_abogado( $params){
+         $params= ['nick'= $future_nick,  'tipo'=>"S", 'pass'=> Hash::make( $raw_pass) , 'rawpass'=> $raw_pass, 'email'=>$r->EMAIL,'ABOGADO'=>$r->IDNRO  ];
+        $usu_rela= new User();
+        $usu_rela->nick= $future_nick;
+        $usu_rela->tipo="S";
+        $usu_rela->pass= Hash::make( $raw_pass) ;
+        $usu_rela->email= $r->EMAIL;
+        $usu_rela->ABOGADO=  $r->IDNRO;
+        $usu_rela->save();
+           //Creacion de usuario
+           $correo_ob= new Correo();
+           $correo_ob->setTitulo("Credenciales de acceso al Sistema de Juicios");
+           $correo_ob->setDestinatario( $r->EMAIL);
+           $correo_ob->setMensaje( "Usuario: $future_nick <br>Password: $raw_pass <br>Recuerde que puede cambiar su nick y contraseña cuando lo desee" );
+           $genemail= new GenericMail( $correo_ob );
+           $this->enviar_email_credencial(   $r->EMAIL,  $genemail );
+     }
+     private function email_actualizado( $old_mail, $nuevo_email, $id_usuario){
+        if(  $old_mail != $nuevo_email   )
+        {
+
+            $usu_rela= User::find( $id_usuario);
+            $usu_rela->email=  $nuevo_email;
+            $usu_rela->save();
+            $correo_ob= new Correo();
+            $correo_ob->setTitulo("Dirección de correo electrónico actualizada");
+            $correo_ob->setDestinatario($nuevo_email);
+            $correo_ob->setMensaje( "Recientemente a cambiado su email de referencia, de $old_mail a $nuevo_email " );
+            $genemail= new GenericMail( $correo_ob );
+            $this->enviar_email_credencial(   $nuevo_email,  $genemail );
+        }
+      
+     }
 
 
 
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
      public  function  regenerar_pin(  $id_abogado){
         $this->obtenerConexion();
          $abogado=  Abogados::find(  $id_abogado );
